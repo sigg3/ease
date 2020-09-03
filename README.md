@@ -1,4 +1,4 @@
-# EASE: <b>E</b>ncrypt <b>A</b>nd <b>S</b>end with <b>E</b>ASE
+# EASE: <ins>E</ins>ncrypt <ins>A</ins>nd <ins>S</ins>end with <ins>E</ins>ASE
 
 Simple utility for symmetric encryption of files or file archives
 prior to distribution over untrusted services (like e-mail).
