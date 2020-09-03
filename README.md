@@ -9,4 +9,6 @@ Application to make symmetric file encryption and decryption simple, with a grap
 ## Screenshots
 
 Main window
-(https://raw.githubusercontent.com/sigg3/ease/master/screenshots/ease_main.png)
+![Main window](https://raw.githubusercontent.com/sigg3/ease/master/screenshots/ease_main.png)
+
+
