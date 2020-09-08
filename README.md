@@ -13,7 +13,7 @@ Graphical user interface using PySimpleGUIQt (Qt).
 
 Main window
 
-![Main window](https://raw.githubusercontent.com/sigg3/ease/master/screenshots/ease_main.png)
+![Main window](https://raw.githubusercontent.com/sigg3/ease/master/screenshots/ease_main_full.png)
 
 
 
