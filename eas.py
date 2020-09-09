@@ -9,7 +9,7 @@
 # under the terms of the GNU General Public License as published by
 # the Free Software Foundation, version 3 of the License.
 #
-# EaSE is distributed in the hope that it will be useful, but
+# EASE is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
@@ -158,6 +158,7 @@ def set_gui_strings(language):
     ease['str']['working'] = "Working"
     ease['str']['encrypting'] = 'Encrypting'
     ease['str']['decrypting'] = 'Decrypting'
+    ease['str']['sending'] = 'Sending'
     ease['str']['patience'] = "This might take a while"
     ease['str']['language'] = "Language"
     ease['str']['options'] = 'options'
@@ -205,7 +206,8 @@ def set_gui_strings(language):
     ease['str']['combo'] = "Choose file transfer service"
     ease['str']['limit'] = 'Limitations'
     ease['str']['faq'] = 'FAQ'
-    
+    ease['str']['homepage'] = 'Homepage'
+    ease['str']['contrib'] = 'Submit issues and new translations at'
     
     # # Create a list of available languages in case
     # # we want to be able to change language on-the-fly
@@ -447,7 +449,7 @@ def create_send_window() -> Type[sg.Window]:
                  readonly=True,
                  enable_events=True)
         ],
-        [sg.Frame(layout=xfer_site, title=sitename, key='-send_opts_frame-')],
+        [sg.Frame(layout=xfer_site, title=' ')], # title is workaround
         [sg.Text(' ')],
         [
         sg.Button(ease['str']['send'], key='-send_send-', disabled=xfer_disabled),
@@ -550,8 +552,54 @@ def create_about_window() -> Type[sg.Window]:
     Helper function to create (and re-create) an about window.
     Returns a window object to allow assignment to var in global scope.
     """
-    # TODO
-    pass
+    # Window layout
+    AboutLayout = [
+        [sg.Text(f"{ease['title']}", font=('Sans serif', 16))],
+        [sg.Text(' ')],
+        [sg.Text("EASE is written by Sigbjørn Smelror (c) 2020, GNU GPL v.3+, to provide")],
+        [sg.Text("a hopefully user-friendly graphical interface to the pyAesCrypt module.")],
+        [sg.Text("It is distributed in the hope that it will be useful, but without any warranty.")],
+        [sg.Text("See the GNU General Public License for more details.")],
+        [sg.Text(f"{ease['str']['contrib']}: {ease['git']}")],
+        [sg.Text(' ')],
+        [sg.Text("Usage should be fairly straight-forward: Encrypt -> Send -> Decrypt")],
+        [sg.Text(' ')],
+        [sg.Text(ease['str']['encrypting'], font=('Sans serif', 12))],
+        [sg.Text("The sender clicks the Encrypt button, selects the file(s) to encrypt,")],
+        [sg.Text("and encrypts them using a passphrase (password) of his or her choosing.")],
+        [sg.Text("This produces an encrypted AES Crypt v.2 file that has an .aes suffix.")],
+        [sg.Text(' ')],
+        [sg.Text(ease['str']['sending'], font=('Sans serif', 12))],
+        [sg.Text("The encrypted .aes file can be distributed over untrusted services like")],
+        [sg.Text("e-mail or any of the file transfer services available when clicking Send.")],
+        [sg.Text("Some services will provide a download link (URL) the recipient can use.")],
+        [sg.Text("Remember: never send an encrypted file and its passphrase together!")],
+        [sg.Text(' ')],
+        [sg.Text(ease['str']['decrypting'], font=('Sans serif', 12))],
+        [sg.Text("Having received the encrypted .aes file through e-mail or a service (above),")],
+        [sg.Text("the recipient simply clicks the Decrypt button, selects the (.aes) file and")],
+        [sg.Text("enters the passphrase (password) provided separately by the sender.")],
+        [sg.Text("And that's it!")],
+        [sg.Text(' ')],
+        [sg.Text("EASE Crypto relies on pyAesCrypt, password_strength and zxcvbn-python")],
+        [sg.Text("Graphical interface is provided by PySimpleGUIQt, translations use gettext.")],
+        [sg.Text("EASE is not affiliated with any of the file transfer services mentioned, and")],
+        [sg.Text("please submit an issue if any of the services are terminated or changed.")],
+        [sg.Text(' ')],
+        [sg.Button(ease['str']['homepage'], key='-github-'), sg.Button('OK', key='-about_ok-')]
+    ]
+    
+    
+    
+    About = sg.Window(
+                      ease['title'],
+                      layout=AboutLayout,
+                      resizable=False,
+                      return_keyboard_events=False,
+                      finalize=False
+                      )
+    
+    return About
 
 
 def get_infostring_from_key(key: str) -> Tuple[str, str, str, bool]:
@@ -881,6 +929,7 @@ if __name__ == '__main__':
     ease = {}
     ease['name'] = 'EASE' # The name of the game
     ease['title'] = f"{ease['name']}: Encrypt And Send with {ease['name']}"
+    ease['git'] = "https://github.com/sigg3/ease"
     ease['buffer'] = 64 * 1024
     ease['password'] = None # Not in use
     ease['input'] = None    # Not in use
@@ -1062,6 +1111,7 @@ if __name__ == '__main__':
     show_encrypt = False
     show_decrypt = False
     show_send = False
+    show_about = False
     
     # Listed files will be removed (unlinked) in event loop
     # These are typically temporary files: e.g. when sending >1 file we
@@ -1480,10 +1530,32 @@ if __name__ == '__main__':
             # Re-open main window
             Main.UnHide()
             
-        elif Main_event == '-button_about-':
-            # Note: this just opens a text box popup, no need to hide main window.
-            show_about_popup = create_about_window()            
-        
+        elif Main_event == '-button_about-' and show_about is False:    
+            show_about = True
+            About = create_about_window()
+
+            while show_about:
+                About_event, About_value = About.read()
+                print(f"About_event  = {About_event}\nAbout_value  = {About_value}")  # debug
+                
+                if About_event == sg.WIN_CLOSED:
+                    show_about = False
+                
+                if About_event == '-about_ok-':
+                    show_about = False
+                
+                if About_event == '-github-':
+                    try:
+                        webbrowser.open(ease['git'])
+                    except Exception as e:
+                        sg.popup_error(
+                                       f"{ease['str']['error']}: {e}",
+                                       title=ease['str']['error']
+                                       )
+                        show_about = False # quit to main
+            
+            About.close()
+            
     
     # Remember to close window
     Main.close()
