@@ -51,8 +51,15 @@ import datetime, time, zipfile, tarfile, copy, webbrowser
 
 def setup_transmitters() -> dict:
     """
-    This will return a dict of file transmission alternatives (over the web).
+    Returns dict of file transmission alternatives (for sending over WWW).
     Separated into its own function for maintenance reasons.
+    Each entry must contain: URL, date (changed), file expire (in days),
+    max file size (in GB), require login (bool), automatation enabled (bool),
+    cap data string (what are service limitations).
+    
+    Automation disabled at the time of writing.
+    Setting automated to True entails writing an linking to a function to
+    deal with automating file upload (e.g. selenium script).
     """
     
     # setup return
@@ -64,8 +71,11 @@ def setup_transmitters() -> dict:
     list_of_sites[sitename]['changed'] = '2020-09-07'
     list_of_sites[sitename]['site_url'] = f'https://www.{sitename}'
     list_of_sites[sitename]['days_expire'] = 7
-    list_of_sites[sitename]['maz_size_gb'] = 5
+    list_of_sites[sitename]['max_size_gb'] = '5 GB'
     list_of_sites[sitename]['require_login'] = False
+    list_of_sites[sitename]['automated'] = False
+    list_of_sites[sitename]['limitations'] = 'files stored for 90 days.'
+    list_of_sites[sitename]['faq'] = 'https://www.sendgb.com/en/faq.html'
     
     # sendgb.com (added 2020-09-07)
     sitename = 'fromsmash.com'
@@ -73,8 +83,11 @@ def setup_transmitters() -> dict:
     list_of_sites[sitename]['changed'] = '2020-09-07'
     list_of_sites[sitename]['site_url'] = f'https://{sitename}'
     list_of_sites[sitename]['days_expire'] = 14
-    list_of_sites[sitename]['maz_size_gb'] = 2
+    list_of_sites[sitename]['max_size_gb'] = 'None'
     list_of_sites[sitename]['require_login'] = False
+    list_of_sites[sitename]['automated'] = False
+    list_of_sites[sitename]['limitations'] = "files 0-2 GB in size must queue."
+    list_of_sites[sitename]['faq'] = 'https://faq.fromsmash.com/'
     
     # sendgb.com (added 2020-09-07)
     sitename = 'surgesend.com'
@@ -82,8 +95,23 @@ def setup_transmitters() -> dict:
     list_of_sites[sitename]['changed'] = '2020-09-07'
     list_of_sites[sitename]['site_url'] = f'https://{sitename}'
     list_of_sites[sitename]['days_expire'] = 7
-    list_of_sites[sitename]['maz_size_gb'] = 3
+    list_of_sites[sitename]['max_size_gb'] = '3 GB'
     list_of_sites[sitename]['require_login'] = False
+    list_of_sites[sitename]['automated'] = False
+    list_of_sites[sitename]['limitations'] = "store up to 5GB per month"
+    list_of_sites[sitename]['faq'] = "https://surgesend.com/help"
+    
+    # dropbox (added 2020-09-08)
+    sitename = 'dropbox.com'
+    list_of_sites[sitename] = {}
+    list_of_sites[sitename]['changed'] = '2020-09-08'
+    list_of_sites[sitename]['site_url'] = f'https://{sitename}'
+    list_of_sites[sitename]['days_expire'] = 'N/A'
+    list_of_sites[sitename]['max_size_gb'] = '2 GB'
+    list_of_sites[sitename]['require_login'] = True
+    list_of_sites[sitename]['automated'] = False
+    list_of_sites[sitename]['limitations'] = "free account gives 2GB storage total"
+    list_of_sites[sitename]['faq'] = "https://www.dropbox.com/basic"
     
     
     # return any hits
@@ -93,14 +121,8 @@ def setup_transmitters() -> dict:
 # language dict
 def set_gui_strings(language):
     """
-    This function sets the visible strings for the GUI according to language
-    preference. Translation can be done by appending this function with an
-    elif clause appropriate for your language.
-    
-    Please copy as-is (with missing punctuation intact), in order to
-    allow for use in f-strings.
-    
-    It is safer to ignore line length than to introduce unwanted tabs in text.
+    This function sets the visible strings for the GUI. I purposefully re-use
+    strings, in order to simplify translations.
     
     NOTE: This will be re-done to use gettext() instead. I was unaware of it.
     Sorry for the inconvenience.
@@ -110,7 +132,7 @@ def set_gui_strings(language):
     # Init GUI strings dictionary
     # Note: 'available languages' list can be used in a drop-down to select
     # language based on preference (currently not implemented).
-    ease['available_languages'] = []
+    #ease['available_languages'] = []
     ease['str'] = {} # strings
     ease['err'] = {} # errors
     ease['enc'] = {} # encryption window
@@ -157,7 +179,6 @@ def set_gui_strings(language):
     ease['enc']['rypt'] = "Encrypt"
     ease['enc']['success'] = "Successfully encrypted input file(s)"
     
-    
     # Decrypt window strings
     ease['dec']['win_0'] = "Decrypt any encrypted .aes file you have received."
     ease['dec']['win_1'] = "If the decrypted file is a tarball or zip archive, it will be extracted."
@@ -167,25 +188,30 @@ def set_gui_strings(language):
     ease['dec']['success'] = "Successfully decrypted input file(s)"
     ease['dec']['skipped'] = 'Skipped items'
     
-    # Send window strings
-    # TODO
-    
-    # Welcome and About strings
+    # Welcome, Send, About strings
+    ease['str']['send'] = 'Send'
+    ease['str']['about'] = 'About'
     ease['str']['eas_win_wel_1'] = "This utility uses AES256-CBC (pyAesCrypt) to encrypt/decrypt files in the AES Crypt file format v.2."
+    ease['str']['expire'] = 'Expires (days)'
+    ease['str']['max_size'] = 'Max file size'
+    ease['str']['req_login'] = 'Require log-in'
+    ease['str']['no'] = 'No'
+    ease['str']['yes'] = 'Yes'
+    ease['str']['updated'] = 'Updated'
+    ease['str']['open'] = 'Open'
+    ease['str']['send_0'] = "Sometimes files are too big for attaching to e-mails."
+    ease['str']['send_1'] = "Most of these online file transfer services do not require a login."
+    ease['str']['send_2'] = "Select any provider to visit their website or attempt sending."
+    ease['str']['combo'] = "Choose file transfer service"
+    ease['str']['limit'] = 'Limitations'
+    ease['str']['faq'] = 'FAQ'
     
     
-    if language == 'English':
-        pass # English is the default
-    elif language == 'Norwegian':
-        # Full set of the above English strings in Norwegian
-        pass
-        # TODO
-    
-    # Create a list of available languages in case
-    # we want to be able to change language on-the-fly
-    # Incomplete languages will contain English (safe fallback).
-    ease['available_languages'].append('English')
-    ease['available_languages'].append('Norwegian')
+    # # Create a list of available languages in case
+    # # we want to be able to change language on-the-fly
+    # # Incomplete languages will contain English (safe fallback).
+    # ease['available_languages'].append('English')
+    # ease['available_languages'].append('Norwegian')
 
 
 def create_main_window() -> Type[sg.Window]:
@@ -193,6 +219,20 @@ def create_main_window() -> Type[sg.Window]:
     Create (and re-create) main (or initial) window
     Return window object to allow for assignment to variable in main.
     """
+    
+    # Set icons
+    icon_encrypt = ease['icon_encrypt']
+    icon_decrypt = ease['icon_decrypt']
+    icon_send = ease['icon_sendenc']
+    icon_about = ease['icon_easehlp']
+    
+    
+    # Set icon text
+    caption_encrypt = ease['enc']['rypt']
+    caption_decrypt = ease['dec']['rypt']
+    caption_send    = f" {ease['str']['send']}"   # space added for English
+    caption_about   = f" {ease['str']['about']}"  # Qt justification :( # TODO
+    
     
     # Set layout
     WelcomeLayout = [
@@ -202,18 +242,31 @@ def create_main_window() -> Type[sg.Window]:
                 [sg.Text(f"{ease['str']['eas_win_wel_1']}")],
                 [sg.Text(' ')],
                 [sg.Button(
-                    f"{ease['enc']['rypt']}",
-                    image_data=ease['icon_encrypt'],
+                    caption_encrypt,
+                    image_data=icon_encrypt,
                     key='-button_encrypt-',
                     font=("Helvetica", 16)
                     ),
                  sg.Button(
-                    f"{ease['dec']['rypt']}",
-                    image_data=ease['icon_decrypt'],
+                    caption_decrypt,
+                    image_data=icon_decrypt,
                     key='-button_decrypt-',
                     font=("Helvetica", 16)
                     )
-                 ],
+                ],
+                [sg.Button(
+                    caption_send,
+                    image_data=icon_send,
+                    key='-button_send-',
+                    font=("Helvetica", 16)
+                    ),
+                 sg.Button(
+                    caption_about,
+                    image_data=icon_about,
+                    key='-button_about-',
+                    font=("Helvetica", 16)
+                    )
+                ],
                 [sg.Text(' ')]
                 ]
     
@@ -228,11 +281,6 @@ def create_main_window() -> Type[sg.Window]:
     
     # return object to var
     return Welcome
-
-
-
-
-
 
 
 def create_enc_window() -> Type[sg.Window]:
@@ -359,6 +407,191 @@ def create_dec_window() -> Type[sg.Window]:
                         )
     return Decrypt
 
+
+def create_send_window() -> Type[sg.Window]:
+    """
+    Helper function to create (and re-create) file send window.
+    Return window object to allow assignment to "global" Window variable.
+    """
+    
+    # Fetch latest transmitter info
+    sites = ease['sites']
+    
+    # Set first item as default
+    for sitename in sites.keys():
+        site_sentence, site_cap, site_faq, xfer_disabled = get_infostring_from_key(sitename)
+        break # we just need the first one for creation
+    
+    # File xfer site info table
+    xfer_site = [
+        [sg.T(f"URL: {sites[sitename]['site_url']}", key='-provider_url-')],
+        [sg.T(site_faq, key='-provider_faq-')],
+        [sg.T(site_sentence, key='-provider_info-')],
+        [sg.T(site_cap, key='-provider_capinfo-')]
+    ]
+    
+    # Window layout
+    SendfileLayout = [
+        [sg.Text(f"{ease['title']}", font=('Sans serif', 16))],
+        [sg.Text(' ')],
+        [sg.Text(ease['str']['send_0'])],
+        [sg.Text(ease['str']['send_1'])],
+        [sg.Text(ease['str']['send_2'])],
+        [sg.Text(' ')],
+        [
+            sg.Text(f"{ease['str']['combo']}: "),
+            sg.Combo(
+                 list(sites.keys()),
+                 default_value=sitename,
+                 key='-send_combo-',
+                 readonly=True,
+                 enable_events=True)
+        ],
+        [sg.Frame(layout=xfer_site, title=sitename, key='-send_opts_frame-')],
+        [sg.Text(' ')],
+        [
+        sg.Button(ease['str']['send'], key='-send_send-', disabled=xfer_disabled),
+        sg.Button(f"{ease['str']['open']} URL", key='-visit_url-'),
+        sg.Button(ease['str']['cancel'], key='-send_cancel-')
+        ]
+    ]
+    
+    # TODO REWRITE AS A DROP-DOWN THAT RE-DRAWS the frame below
+    # Show 1 provider at the time
+    # with buttons visit URL and send file below ..
+    # TODO
+    
+    # for sitename in sites.keys():
+        
+        # site_sentence, xfer_disabled = get_infostring_from_key(sitename)    
+        # if is_first_one:
+            # # set as default / initial value
+        
+            # is_first_one = False
+        # else:
+            
+        
+        
+    
+    
+    
+    # # Populate window with frames containing sites
+    # for sitename in sites.keys():
+        
+        # # build site info string
+        # site_sentence = f"{ease['str']['max_size']}: "
+        # site_sentence += f"{sites[sitename]['max_size_gb']} GB, "
+        # site_sentence += f"{ease['str']['expire']}: "
+        # site_sentence += f"{sites[sitename]['days_expire']}, "
+        # site_sentence += f"{ease['str']['req_login']}: "
+        
+        # if sites[sitename]['require_login']:
+            # site_sentence += ease['str']['yes']
+        # else:
+            # site_sentence += ease['str']['no']
+        
+        # # automation button disabled/enabled status
+        # xfer_disabled = False if sites[sitename]['automated'] else True
+        
+# #        [sg.Button(
+# #                    caption_encrypt,
+# #                    image_data=icon_encrypt,
+# #                    key='-button_encrypt-',
+# #                    font=("Helvetica", 16)
+# #                    ),
+        
+        
+        # frame_construct = [
+# #            [sg.T('URL:'), sg.In(sites[sitename]['site_url'], disabled=True), sg.Button(ease['str']['open'], key='-visit_url-')],
+            # [sg.T(f"URL: {sites[sitename]['site_url']}"), sg.Button(ease['str']['open'], image_data=ease['icon_globe'], key='-visit_url-'), sg.Button('Send', image_data=ease['icon_trans'], disabled=xfer_disabled)],
+            # [sg.T(site_sentence)]
+            # # [
+            # # sg.T(f"{ease['str']['max_size']}:"),
+            # # sg.T(f"{sites[sitename]['max_size_gb']} GB"),
+            # # sg.T(f"{ease['str']['expire']}:"),
+            # # sg.T(sites[sitename]['days_expire']),
+            # # sg.T(f"{ease['str']['req_login']}:"),
+            # # sg.T(require_login)]
+        # ]
+        
+        # # append frame structure feat. table
+        # SendfileLayout.append(
+            # [sg.Frame(
+                # layout=frame_construct,
+                # title=f"{sitename} ({ease['str']['updated']}:{sites[sitename]['changed']})"
+                # )
+            # ],
+            
+        # )
+        # SendfileLayout.append([sg.T(' ')],)
+    
+    # # Add Close/OK button at the bottom
+    # SendfileLayout.append([sg.Button('Close', key='-send_cancel-')])
+# #        [
+# #        sg.OK 
+# #        sg.Button(f"{ease['str']['send']}", key='-send_send-'),
+# #        sg.Cancel(ease['str']['cancel'], key='-send_cancel-')
+# #        ]
+# #    ]
+    
+    SendFile = sg.Window(
+                         ease['title'],
+                         layout=SendfileLayout,
+                         resizable=True,
+                         return_keyboard_events=False,
+                         finalize=True
+                         )
+    
+    return SendFile
+    
+
+def create_about_window() -> Type[sg.Window]:
+    """
+    Helper function to create (and re-create) an about window.
+    Returns a window object to allow assignment to var in global scope.
+    """
+    # TODO
+    pass
+
+
+def get_infostring_from_key(key: str) -> Tuple[str, str, str, bool]:
+    """
+    Simple way to build string from sites[] dict in setup_transmitters()
+    Returns a tuple: f-string of general site info, and a bool
+    """
+    
+    sites = ease['sites']
+
+    # automated "send" action button disabled/enabled status
+    xfer_disabled = False if sites[key]['automated'] else True
+    
+    # build site info string
+    site_sentence = f"{ease['str']['max_size']}: "
+    site_sentence += f"{sites[key]['max_size_gb']}, "
+    site_sentence += f"{ease['str']['expire']}: "
+    site_sentence += f"{sites[key]['days_expire']}, "
+            
+    # finish info string
+    if sites[key]['require_login']:
+        site_sentence += f"{ease['str']['req_login']}: {ease['str']['yes']}"
+        xfer_disabled = True # override (avoids this whole bag of bugs)
+    else:
+        site_sentence += f"{ease['str']['req_login']}: {ease['str']['no']}"
+    
+    # get site cap (limitations) info
+    site_cap = sites[key]['limitations']
+    if site_cap is None:
+        site_cap = f"{ease['str']['limit']}: N/A"
+    else:
+        site_cap = f"{ease['str']['limit']}: {site_cap}"
+    
+    # get faq (URL)
+    site_faq = f"{ease['str']['faq']}: {sites[key]['faq']}"
+     
+    return site_sentence, site_cap, site_faq, xfer_disabled
+    
+    
+    
 
 def get_folder_from_infiles(input_files: str) -> str:
     """
@@ -658,7 +891,7 @@ if __name__ == '__main__':
     ease['compression'] = False # use store
     
     # Set "home" dir (our default)
-    if Path.is_dir(Path.home()):
+    if Path.home().is_dir():
         ease['home_dir'] = Path.home()
     else:
         ease['home_dir'] = Path.cwd()
@@ -720,9 +953,109 @@ if __name__ == '__main__':
                              EwJ5/SGLU/QKCGCjFICQsa34BvgYaikVgJxY5/bHb0Cz6Bfka\
                              yNzli6W5KPCKwbTTHvC6obmamefrAOqlpJxo/gB9k7aRwlhAg\
                              wAAAABJRU5ErkJggg=='
+
+    # Icons8 icon file (MIT) Copyright (C) The author(s) 
+    ease['icon_sendenc'] = b'iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAB\
+                           HNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0\
+                           RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAPCSUR\
+                           BVGiB7ZhtaFtlFMd/z81LbaYZ7CUz6QzVabtZZju6UVb30oo6lI\
+                           E6kIEw6AcHm3WgHwTnh4E4QSx0qAzpt8HQwVDRL1q26Wjt3Fbas\
+                           jKtbeek617SJa3SG5YtL72PH9LEJrkzyU1sU7i/T/ee57n/c849\
+                           51y4D5iYmJiYmCxixNF3+uU8+QoiOW0Ryrv72jZcKZaoUiyhHHg\
+                           Iwa4Y8sLnb1+qKJaoSDcc2t1dUEVWeZfk4vVk68f1uwvxk2A+K/\
+                           Avkh3FkrKmG3J6g4WztFhC1nkc4hRkV9mLQAewOsvWMTT2i+Zwp\
+                           97iwrRQnFyCB6hE4Wv5s61Wb7HgITbacm/sbExeH/jmBUYCKzL2\
+                           2CwzvLXtAs9V/QkwRtS+UTwbnJq7ZyErkEQveIDojIUjXZsZvLU\
+                           KoBJr5JiUqTEv1BDnTExT+OBUE5/u+h6PM7iTbvt7EDmcWF+wIc\
+                           4HNWznUGczn7zcyRJ75H15tqwvMdQl0UK5MP73Uj48sxVNCgVFf\
+                           CG7HngUDAxxsVps7hA/37En5+derfuNvQ0DAJewhRsXTQUSfHt5\
+                           beKyjmjZRyUxxNWuSUb8+l+idKIzlrm3r5fEEH/2yg8p9zOawvH\
+                           +9Xw58FS2Rx0l2UIWRaNl0yAtmwaxKFrK2jrXZMp91iH+v1pq7h\
+                           AXQklWIB9KYogLYdFXYNEnkNFCuXBdHWYocJGpuz4Alpe7qVm5m\
+                           dXOqoID6h51caK3kmFf/KdtnXua1xrG2PKEX3e/XgIq4Lyfg4GJ\
+                           H/nVfy7FdvvONW7fucZ61xY2PPyM4eCPnq3i+PnHUv2NL2NgfBk\
+                           tjVfZ15RxGjOd2UKSM/dzcF0dTgZvs9nweL14vF6s1vh7uOzv4Y\
+                           Zq7Mine9SVDF5P+9gva+i54kqP9XRGAlKzHASm0u0AQ4GLSQf1j\
+                           duorqmluqaWjU9vTzoamjxvKIETvZVZtRN74oi/kBzMSODN9rpR\
+                           JWapRXCSeDslmboX73mXu4JyhyNpL3c4cHk88T2hW4YSGJ5wZtX\
+                           +3ecEUJF8hSYbRHP4D90h3n+k7iaQcfDUsOOlIPCgRMt4Rs6aol\
+                           pEbW2rz3ps0tqWrm3Nqh2KWFWxPZyine9ntA8g4PNxNxRKGu+FQ\
+                           gQmZt+8EH15ahaknddnVEjapaApGo3Sd64Llzt+xOn33SQWiwEg\
+                           pdZuJHqj2pZ0w39x4+rI6COPr7UDWzVNI6hOE1Sn0bTZGktxuPf\
+                           Udx1GEjCqnVcCs45+qljzZL8Q0g2sBCII0SORB4wGPx/aJiYmJi\
+                           a6/AORnX+gBEwubAAAAABJRU5ErkJggg=='
     
-    ease['icon_sendenc'] = '' # TODO send icon
-    ease['icon_easehlp'] = '' # TODO help/about icon
+    # Icons8 icon file (MIT) Copyright (C) The author(s) 
+    ease['icon_easehlp'] = b'iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAB\
+                           HNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0\
+                           RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAGpSUR\
+                           BVGiB7ZY9SwNBEIbfTS5GvLNQm4CiEFJpQLTTwo9eW5uonYYg/o\
+                           FUscgfCEhAS7WxFfukSRcsJK34AcbCSi8haC5jJyh78YiZ3C3sU\
+                           84sO+/DLncLaDQajZ+Ibs1EgaKOYe8DIgUgCZA5oFgNgG4hcDEy\
+                           YZ3UtsSH60q3xlSxORkh5xrAPEtG79y0ndDG06H5LGuGZMVEgaI\
+                           BCQ8ACxGjczV3SUOyplSgHbHTCEZ4AAARFpuv9p6sJxUQJFK8kX\
+                           piW1aUCgA0y5mkR5KyoosALMYgvSLN5Cbwb9ZnDFR2TVR2TKxNh\
+                           7nG8AnkV6KImQIxSyC/Osw1hk9gULAJZMstvNiEuk3IlltcY2Bw\
+                           bVx6dLB81uDa/ht9hfyG7QrdZX5+tuNFm2WO8iegBfxGC/iNFvA\
+                           bLeA3yguwPSW4ng6/Uf4EtMAAeZMV1REg1GRlZQQEcC6rqyJQHT\
+                           OsU1lDBYFqJxzarKbFp6wZVAGbgIogHIyHraWHtFl3W+j5R0YCu\
+                           fvM6FF/8vUPTycQ1PCAB4Eghwf+EAh6eKCLgArhXYkfv+f8zqBR\
+                           hS9jd2TmUiJFJAAAAABJRU5ErkJggg=='
+    
+    # Smaller button (also Icons8, MIT). Currently not in use
+    ease['icon_globe'] = b'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHN\
+                         CSVQICAgIfAhkiAAAAAlwSFlzAAAHYgAAB2IBOHqZ2wAAABl0RVh0\
+                         U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAQ+SURBVEiJt\
+                         ZVbbFRFGMd/M+fsObttactC3S0WBGyRO0EMhAQDlYsoEdRUI0Z80G\
+                         h86YNcTNCXvhgDJkQl8UEe8EGjiVwUAgiUKqCEIHIpl2JLsY1N24W\
+                         ml6XbPXv2nDM+tD3udkvSmPB/mvlm5v+b831zZuAhS4xp1tba+Zpk\
+                         nhJEAIQi5gpVz47V1/4/oOZwnm6ZW3ThVtueUQJgSluZAYuEXYCrp\
+                         DD09F3H0XY7IWsXNS8MjB2wrW65EUgfcFw9nBleW36MJ6OX8JQklo\
+                         hwoKGKvlQhuuZ0267+EjtWnhlpJUcGAttPbdI0t055MhzNjxHJj4F\
+                         QANTeWT24SHgUmnEG0nkAOK4e1lF1ge2nNo3000fu3FPu1wsjV+SK\
+                         qb8S1JMA3O4u54eGVzE1GwDbM/jprxdJezq6TPPyzIPcGyjRTres2\
+                         Mu22hY+XXU29wtqDucZgfSBinCTXPv4zwT1JPWxBey59A6diShBPU\
+                         VIH6A3Vcw3V9+kpXcqAM9MraM83MTSsnNMG39bM3TnIO+fC+UAdMv\
+                         cIvCK11UcAaFIpPM43rwWxzPouB/FSgfpsibw1Z/v0pmI+Pvy0Pz2\
+                         hicOY2h2sWEmNucChFv9VOlFGRpKi1IaC6KXeWvhHl6ZvY+lk38HJ\
+                         XC8gG+YHxhgSlGL3w/qSRZP+kOT0q3OBmytnW97RklFuMmfXGDcZ8\
+                         30E37eh8GZem3Od0TzY1mx2SXXsd1AhA9/mQtDRdY0OVcKV5UWdGQ\
+                         dW8/TaOyu4EbXHBq7ZmYZLZv8G5GCzhxocbCPoGa5KS84z4XrOoAS\
+                         XmlxsEdp0s0C/Ni4gVtds3JMEIp5j9TnxoeUbySEZZmTIKMGvVax7\
+                         LWKSLkGhxrX09r3GHd6po9qMCPcyPhQzwMBUnigUD5AINpdpbH/Vh\
+                         U9ycGf90TzGmzXHNVg2ZSzo8aHlXRCnoB2H+AKdRUg1h/l+xsbCQW\
+                         SlBZ0MnNiAzMmNGLqqSwDx9NzTIfVZxXRb+frrqR+cPNDCn10rD3l\
+                         GKXD/VXTTrL40QsAtMXL+Pb6G7ie5qegKNhH2bh/WFd+FCldH3C6d\
+                         TkXOxZ3JD9+LrsGaU/7LHMn9+1Cv11W2MZ7i77k6SmDd5mnJD3J8V\
+                         y7O5+/e/+rUywR4UL7Ei/Tywc4ZuALQ7PvDfebe8oHqzSkIjPOgui\
+                         VnJQ0dZcDYDkh9t+sQii6nH7n8xwANZWW5QTXS+E5AF0DE2jtnZZl\
+                         dvPunBzA7e4KUq7BvoYq4nahY7nmBnY/7xct+7reWXleIl8fhrTFy\
+                         /yhM63LqWtZmQOI2+PYe/lt2uJljhT6RnZWns8cH/3B2V63JIh9SA\
+                         k1cVHpJVlk9nG8+dlRpwIYmhOzHH09O1deGDn24Cez+qipFwSqA9L\
+                         ZnHm6MmXqdkfa03c5/endmWkZGyBTH5ycpQltof/oozpdIS/zSeWt\
+                         Ma1/mPoXMhSlLR8VmrIAAAAASUVORK5CYII='
+
+    # Smaller button (also Icons8, MIT). Currently not in use
+    ease['icon_trans'] = b'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHN\
+                         CSVQICAgIfAhkiAAAAAlwSFlzAAAHYgAAB2IBOHqZ2wAAABl0RVh0\
+                         U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAJrSURBVEiJ7\
+                         ZPfS1NhGMc/75mejVJXdBFGWWkGmkY0ZbD8gTDKyAu7MPsHXKDhRV\
+                         DdhRddmBYoIhFFRXijXgQhdKEUiporFkFqgknG0row2nTkznTn7WJ\
+                         uOnUb7qYbv3A4D8/zfb/f5znPeWEX/xui85arCUBIcW49y0C8Q1Jn\
+                         IaildzV25GqJDFLCwZJXs2/I2zcT08zqhrbAYPRWAjWJDEQ4uOd4J\
+                         +MRowwACYHrrRZjIoOUzpuuuMJxOlPloDoCwhZdkU70gF1U4FvjhX\
+                         Cndmhbo4NZe2Oa1FfZePk5j4ejRQAYFJ3GEicX82a6Rbn/amiCtSW\
+                         T1Bzg01IjcVBX6Bi2kpnhq5VDv8ZEmdamRIjeQNSTLFZ1hbv95cx7\
+                         0u/LQVOZ0tBiaWposTQlK5hu2trMoqby5utxA8hnSS85jOqCKaoLp\
+                         pBS0OUqpOvjaaQUpBkDANlblhxvqZtRX2VLyIlctJ0I7wQpsQqBoJ\
+                         9ZzyQAx/adQjXEv1Of3Pv5Mm8m75CXM0f+bGcgf4A4HBbvm37MqsE\
+                         PwMTCMJdOXItp0v3hKG0D+aRlmPEterlhn6Sm+DuAO/KbCl1xAG6A\
+                         b55xVg1+rKUVWEsrWBEas56JmN2/GM3hZH4hRbZScvMLeD6aA+BGx\
+                         xGZoP7B2ddAFoD1fLXDtMf0KOQcqjvn+uran9Y92Sjc0Bp6Wy+o8w\
+                         eQmeH8b586J8q1rE2faB1agB6Uv7edQ2+zAZb9yzPBoNobawIhaJ6\
+                         eHG//6XbjW/JKKWRzpBbrkMVeY041aFcAVoLGHtdArzcWF8BaeblE\
+                         6nqxIuX7sf5XI/G4u4jCP1lX4BBIAojvAAAAAElFTkSuQmCC'
+    
     
     
     # GUI toggles
@@ -746,10 +1079,14 @@ if __name__ == '__main__':
         if files_to_remove:
             for xfile in files_to_remove:
                 try:
-                    Path(xfile).unlink(missing_ok=True) # since we already have Path imported ..
+                    # use unlink since we already use Path
+                    Path(xfile).unlink(missing_ok=True)
                     print(f"removed {xfile}") # debug
                 except Exception as e:
-                    sg.popup_error(f"Error removing file {xfile}.\nException: {e}", title='Error')
+                    sg.popup_error(
+                                   f"Error removing file {xfile}.\nException: {e}",
+                                   title=f"{ease['str']['error']}"
+                                   )
             files_to_remove.clear()
         
         
@@ -966,12 +1303,12 @@ if __name__ == '__main__':
                                 else:
                                     output_file = Path(str(output_file + '.out'))
                             
-                            output_was = output_file                                            #
-                            avoid_dupes = 1                                             #
-                            while output_file.is_file():
-                                output_alt = str(output_was) + f'-out_{avoid_dupes}'
-                                output_file = Path(output_alt) # loop will end here
-                                avoid_dupes += 1
+                            # Create unique output name if out file exists
+                            if output_file.is_file():
+                                output_alt = output_file.parent / output_file.stem
+                                output_alt = f"{output_alt}-{get_unique_middlefix()}"
+                                output_file = f"{output_alt}{output_file.suffix}"
+                                
                             
                             # Run aescrypt_worker in a separate thread
                             # while displaying a "working..." animated pop-up
@@ -982,7 +1319,7 @@ if __name__ == '__main__':
                             if ease['thread'][0] == 0:
                                 pass
                             elif ease['thread'][0] == 1:
-                                sg.popup_error(f"I/O {ease['str']['error']}: {ease['thread'][1]}", title=f"I/O ease['str']['error'])")
+                                sg.popup_error(f"I/O {ease['str']['error']}: {ease['thread'][1]}", title=f"I/O {ease['str']['error']}")
                                 show_decrypt = False
                             elif ease['thread'][0] == 2:
                                 sg.popup_error(f"{ease['str']['error']} {ease['str']['decryption']}: {ease['thread'][1]}", title=f"{ease['str']['decryption']} {ease['str']['error']}")
@@ -1032,12 +1369,23 @@ if __name__ == '__main__':
                                 
                                 # Give visual feedback
                                 if number_of_extracted_items == number_of_archived_items:
-                                    sg.popup_ok(f"{ease['dec']['success']}: {number_of_extracted_items} / {number_of_archived_items}", title=f"{ease['str']['success']}!")
+                                    sg.popup_ok(
+                                    f"{ease['dec']['success']}: {number_of_extracted_items} / {number_of_archived_items}",
+                                    title=f"{ease['str']['success']}!"
+                                    )
+                                    
                                 else:
-                                    sg.popup_ok(f"{ease['dec']['success']}: {number_of_extracted_items} / {number_of_archived_items}\n\n{ease['dec']['skipped']}:\n{skipped_files}", title='Info')
+                                    sg.popup_ok(
+                                    f"{ease['dec']['success']}: {number_of_extracted_items} / {number_of_archived_items}\n\n{ease['dec']['skipped']}:\n{skipped_files}",
+                                    title='Info'
+                                    )
                                 
                             else:
-                                sg.popup_error(f"{ease['err']['isnotfile']}: {output_file}", title=ease['str']['error'])
+                                sg.popup_error(
+                                    f"{ease['err']['isnotfile']}: {output_file}",
+                                    title=ease['str']['error']
+                                    )
+                                
                                 show_decrypt = False
                             
                             # Remove .aes file if so configured
@@ -1048,10 +1396,16 @@ if __name__ == '__main__':
                             show_decrypt = False
                             
                         else:
-                            sg.popup_error(f"'{uinput_file}' != AES v2 (pyAesCrypt). {ease['str']['aborting']}!", title=ease['str']['error'])
+                            sg.popup_error(
+                                f"'{uinput_file}' != AES v2 (pyAesCrypt). {ease['str']['aborting']}!",
+                                title=ease['str']['error']
+                                )
                             show_decrypt = False
                     else:
-                        sg.popup_error(f"{ease['err']['isnotfile']}: '{uinput_file}'. {ease['str']['aborting']}!", title=ease['str']['error'])
+                        sg.popup_error(
+                            f"{ease['err']['isnotfile']}: '{uinput_file}'. {ease['str']['aborting']}!",
+                            title=ease['str']['error']
+                            )
                         show_decrypt = False
                     
                     # Rest of decrypt stuff goes here
@@ -1063,18 +1417,72 @@ if __name__ == '__main__':
             Main.UnHide()
             
         elif Main_event == '-button_send-' and show_send is False:
-            # debug
-            print('SEND window')
-            pass 
-            # TODO
+            show_send = True
+            Main.Hide()
+            
+            # Setup sites info if unset
+            try:
+                ease['sites']
+            except:
+                ease['sites'] = setup_transmitters()
+            
+            Send = create_send_window()
+            
+            # Do send file loop
+            while show_send:
+                Send_event, Send_value = Send.read()
+                print(f"Send_event  = {Send_event}\nSend_value  = {Send_value}")  # debug
+                if Send_event == sg.WIN_CLOSED:
+                    show_send = False
+                
+                if Send_event == '-send_cancel-':
+                    show_send = False
+                
+                if Send_event == '-send_combo-': # dropdown event
+                    # get site selected
+                    sitename = Send_value['-send_combo-']
+                    
+                    # fetch relevant info
+                    site_sentence, site_cap, site_faq, xfer_disabled = get_infostring_from_key(sitename)
+                                        
+                    # update fields in-place
+                    Send['-provider_url-'].update(f"URL: {ease['sites'][sitename]['site_url']}")
+                    Send['-provider_info-'].update(site_sentence)
+                    Send['-provider_capinfo-'].update(site_cap)
+                    Send['-provider_faq-'].update(site_faq)
+                elif Send_event == '-visit_url-':
+                    target_key = Send_value['-send_combo-']
+                    try:
+                        target_url = ease['sites'][target_key]['site_url']
+                    except Exception as e:
+                        sg.popup_error(
+                                       f"{ease['str']['error']}: {e}",
+                                       title=ease['str']['error']
+                                       )
+                        show_send = False # quit to main
+                    
+                    try:
+                        webbrowser.open(target_url)
+                    except Exception as e:
+                        sg.popup_error(
+                                       f"{ease['str']['error']}: {e}",
+                                       title=ease['str']['error']
+                                       )
+                        show_send = False # quit to main
+                    
+                elif Send_event == '-send_send-':
+                    # TODO
+                    pass
+            
+            # End Send window
+            Send.close()
+            
+            # Re-open main window
+            Main.UnHide()
+            
         elif Main_event == '-button_about-':
             # Note: this just opens a text box popup, no need to hide main window.
-
-            # debug
-            print('ABOUT popup')
-
-            pass
-            # TODO
+            show_about_popup = create_about_window()            
         
     
     # Remember to close window
