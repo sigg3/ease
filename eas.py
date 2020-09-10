@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# coding=utf-8
 # EaSE: Encrypt and Send with EaSE
 # Simple utility for symmetric encryption of files or file archives
 # prior to distribution over untrusted services (like e-mail).
@@ -24,15 +25,16 @@ from password_strength import PasswordStats
 from typing import Tuple, Type
 from threading import Thread
 import datetime, time, zipfile, tarfile, copy, webbrowser
-#import PySimpleGUI as sg
+
+# Enable translation
+import gettext
+_ = gettext.gettext
+
+
+
 
 # List of issues, todos and bugs (by priority)
 # TODO sending
-# Priority: sendgb.com, fromsmash.com and fallback to surgesend.com
-
-# In [12]: import webbrowser                                 
-# In [13]: webbrowser.open('https://sigg3.net')      
-
 # Using selenium is not recommended at this stage, because we will need
 # a separate geckodriver install (and probably break ToS).
 # Using webbrowser instead, we can serve a number of convenient links
@@ -118,104 +120,6 @@ def setup_transmitters() -> dict:
     return list_of_sites
 
 
-# language dict
-def set_gui_strings(language):
-    """
-    This function sets the visible strings for the GUI. I purposefully re-use
-    strings, in order to simplify translations.
-    
-    NOTE: This will be re-done to use gettext() instead. I was unaware of it.
-    Sorry for the inconvenience.
-    
-    """
-    
-    # Init GUI strings dictionary
-    # Note: 'available languages' list can be used in a drop-down to select
-    # language based on preference (currently not implemented).
-    #ease['available_languages'] = []
-    ease['str'] = {} # strings
-    ease['err'] = {} # errors
-    ease['enc'] = {} # encryption window
-    ease['dec'] = {} # decryption window
-    # + moar
-    
-    # Strings for the graphical user interface. Please do not wrap lines.
-    # Recurring/general strings
-    ease['str']['eas_win_intro'] = "Encrypt a file or files securely so it's safe to distribute, or decrypt files you have received."
-    
-    ease['str']['select_outdir'] = "Specify where to save the output"
-    ease['str']['select_infile'] = "Select input file(s)"
-    ease['str']['passphrase'] = "Passphrase"
-    ease['str']['phrase_help'] = "It is recommended to use a full sentence as the passphrase."
-    ease['str']['cancel'] = "Cancel"
-    ease['str']['success'] = "Success"
-    ease['str']['error'] = "Error"
-    ease['str']['aborting'] = "Aborting"
-    ease['str']['encryption'] = "Encryption"
-    ease['str']['decryption'] = "Decryption"
-    ease['str']['archiving'] = "Archiving"
-    ease['str']['extracting'] = "Exctracting" # e.g. unarchiving
-    ease['str']['working'] = "Working"
-    ease['str']['encrypting'] = 'Encrypting'
-    ease['str']['decrypting'] = 'Decrypting'
-    ease['str']['sending'] = 'Sending'
-    ease['str']['patience'] = "This might take a while"
-    ease['str']['language'] = "Language"
-    ease['str']['options'] = 'options'
-    ease['str']['elapsed'] = 'Elapsed time'
-    ease['str']['secs'] = 'seconds'
-        
-    # Errors
-    ease['err']['arch_none'] = "Could not archive all selected files"
-    ease['err']['arch_some'] = "Could not archive any files"
-    ease['err']['notfolder'] = "Selected folder is not a folder"
-    ease['err']['isnotfile'] = "Selected input is not recognized as file(s)"
-    
-    # Encryption window strings
-    ease['enc']['win_0'] = "Securely encrypt file(s), so it is safe to distribute over untrusted service (like e-mail)."
-    ease['enc']['win_1'] = "If you select more than one file, they will be gathered in an encrypted archive."
-    ease['enc']['win_2'] = "If your recipient uses Windows, consider using zip instead of tar."
-    ease['enc']['options'] = "Archiving options (for groups of files)"
-    ease['enc']['compress'] = "Enable compression (smaller file size)"
-    ease['enc']['rypt'] = "Encrypt"
-    ease['enc']['success'] = "Successfully encrypted input file(s)"
-    
-    # Decrypt window strings
-    ease['dec']['win_0'] = "Decrypt any encrypted .aes file you have received."
-    ease['dec']['win_1'] = "If the decrypted file is a tarball or zip archive, it will be extracted."
-    ease['dec']['uncompress'] = "Automatically decompress decrypted archives"
-    ease['dec']['rem_src'] = "Remove source .aes file after decryption"
-    ease['dec']['rypt'] = "Decrypt"
-    ease['dec']['success'] = "Successfully decrypted input file(s)"
-    ease['dec']['skipped'] = 'Skipped items'
-    
-    # Welcome, Send, About strings
-    ease['str']['send'] = 'Send'
-    ease['str']['about'] = 'About'
-    ease['str']['eas_win_wel_1'] = "This utility uses AES256-CBC (pyAesCrypt) to encrypt/decrypt files in the AES Crypt file format v.2."
-    ease['str']['expire'] = 'Expires (days)'
-    ease['str']['max_size'] = 'Max file size'
-    ease['str']['req_login'] = 'Require log-in'
-    ease['str']['no'] = 'No'
-    ease['str']['yes'] = 'Yes'
-    ease['str']['updated'] = 'Updated'
-    ease['str']['open'] = 'Open'
-    ease['str']['send_0'] = "Sometimes files are too big for attaching to e-mails."
-    ease['str']['send_1'] = "Most of these online file transfer services do not require a login."
-    ease['str']['send_2'] = "Select any provider to visit their website or attempt sending."
-    ease['str']['combo'] = "Choose file transfer service"
-    ease['str']['limit'] = 'Limitations'
-    ease['str']['faq'] = 'FAQ'
-    ease['str']['homepage'] = 'Homepage'
-    ease['str']['contrib'] = 'Submit issues and new translations at'
-    
-    # # Create a list of available languages in case
-    # # we want to be able to change language on-the-fly
-    # # Incomplete languages will contain English (safe fallback).
-    # ease['available_languages'].append('English')
-    # ease['available_languages'].append('Norwegian')
-
-
 def create_main_window() -> Type[sg.Window]:
     """
     Create (and re-create) main (or initial) window
@@ -230,18 +134,18 @@ def create_main_window() -> Type[sg.Window]:
     
     
     # Set icon text
-    caption_encrypt = ease['enc']['rypt']
-    caption_decrypt = ease['dec']['rypt']
-    caption_send    = f" {ease['str']['send']}"   # space added for English
-    caption_about   = f" {ease['str']['about']}"  # Qt justification :( # TODO
+    caption_encrypt = _('Encrypt')
+    caption_decrypt = _('Decrypt')
+    caption_send    = f" {_('Send')}"   # space added for English
+    caption_about   = f" {_('About')}"  # Qt justification :( # TODO
     
     
     # Set layout
     WelcomeLayout = [
                 [sg.Text(f"{ease['title']}", font=('Sans serif', 16))],
                 [sg.Text(' ')],
-                [sg.Text(f"{ease['str']['eas_win_intro']}")],
-                [sg.Text(f"{ease['str']['eas_win_wel_1']}")],
+                [sg.Text(_("Encrypt a file or files securely so it's safe to distribute, or decrypt files you have received."))],
+                [sg.Text(_("This utility uses AES256-CBC (pyAesCrypt) to encrypt/decrypt files in the AES Crypt file format v.2."))],
                 [sg.Text(' ')],
                 [sg.Button(
                     caption_encrypt,
@@ -294,7 +198,7 @@ def create_enc_window() -> Type[sg.Window]:
     # Set tables
     enc_opts = [
         [
-        sg.CBox(ease['enc']['compress'], default=False, key='compression')
+        sg.CBox(_('Enable compression (smaller file size)'), default=False, key='compression')
         ],
         [
         sg.Radio('tarball', 'archive_radio', key='tar'),
@@ -320,24 +224,24 @@ def create_enc_window() -> Type[sg.Window]:
     EncryptLayout = [
         [sg.Text(f"{ease['title']}", font=('Sans serif', 16))],
         [sg.Text(' ')],
-        [sg.Text(f"{ease['enc']['win_0']}")],
-        [sg.Text(f"{ease['enc']['win_1']}")],
-        [sg.Text(f"{ease['enc']['win_2']}")],
+        [sg.Text(_("Securely encrypt file(s), so it is safe to distribute over untrusted service (like e-mail)."))],
+        [sg.Text(_("If you select more than one file, they will be gathered in an encrypted archive."))],
+        [sg.Text(_("If your recipient uses Windows, consider using zip instead of tar."))],
         [sg.T(' ')],
-        [sg.Frame(layout=enc_in, title=f"{ease['str']['select_infile']}:")],
-        [sg.Frame(layout=enc_out, title=ease['str']['select_outdir'])],
-        [sg.Frame(layout=enc_opts, title=ease['enc']['options'])],
+        [sg.Frame(layout=enc_in, title=_("Select input file(s):"))],
+        [sg.Frame(layout=enc_out, title=_("Specify where to save the output"))],
+        [sg.Frame(layout=enc_opts, title=_('Archiving options (for groups of files)'))],
         [sg.Frame(layout=[
-            [sg.T(f"{ease['str']['phrase_help']}")],
+            [sg.T(_("It is recommended to use a full sentence as the passphrase."))],
             [sg.In('', key='uinput_passphrase')],
             [sg.T(get_password_strength(''), key='uinput_ppstrength')]
             ],
-            title=ease['str']['passphrase']
+            title=_("Passphrase")
             )
         ],
         [
-        sg.Button(f"{ease['enc']['rypt']}", key='-enc_encrypt-'),
-        sg.Cancel(ease['str']['cancel'], key='-enc_cancel-')
+        sg.Button(_('Encrypt'), key='-enc_encrypt-'),
+        sg.Cancel(_("Cancel"), key='-enc_cancel-')
         ]
     ]
     
@@ -368,8 +272,8 @@ def create_dec_window() -> Type[sg.Window]:
     ]
     
     dec_opts = [
-        [sg.CBox(ease['dec']['uncompress'], default=True, key='uncompress')],
-        [sg.CBox(ease['dec']['rem_src'], default=False, key='removesrc')]
+        [sg.CBox(_('Automatically decompress decrypted archives'), default=True, key='uncompress')],
+        [sg.CBox(_('Remove source .aes file after decryption'), default=False, key='removesrc')]
     ]
     
     dec_out = [
@@ -383,20 +287,21 @@ def create_dec_window() -> Type[sg.Window]:
         [sg.In('', key='uinput_passphrase')]
     ]
     
+    
     # Set layout
     DecryptLayout = [
         [sg.Text(f"{ease['title']}", font=('Sans serif', 16))],
         [sg.Text(' ')],
-        [sg.Text(f"{ease['dec']['win_0']}")],
-        [sg.Text(f"{ease['dec']['win_1']}")],
+        [sg.Text(_("Decrypt any encrypted .aes file you have received."))],
+        [sg.Text(_("If the decrypted file is a tarball or zip archive, it will be extracted."))],
         [sg.T(' ')],
-        [sg.Frame(layout=dec_in, title=ease['str']['select_infile'])],
-        [sg.Frame(layout=dec_opts, title=f"{ease['str']['decryption']} {ease['str']['options']}")],
-        [sg.Frame(layout=dec_out, title=ease['str']['select_outdir'])],
-        [sg.Frame(layout=dec_pass, title=ease['str']['passphrase'])],
+        [sg.Frame(layout=dec_in, title=_("Select input file(s)"))],
+        [sg.Frame(layout=dec_opts, title=_('Decryption options'))],
+        [sg.Frame(layout=dec_out, title=_("Specify where to save the output"))],
+        [sg.Frame(layout=dec_pass, title=_("Passphrase"))],
         [
-        sg.Button(f"{ease['dec']['rypt']}", key='-dec_decrypt-'),
-        sg.Cancel(ease['str']['cancel'], key='-dec_cancel-')
+        sg.Button(_('Decrypt'), key='-dec_decrypt-'),
+        sg.Cancel(_("Cancel"), key='-dec_cancel-')
         ]
     ]
 
@@ -436,12 +341,12 @@ def create_send_window() -> Type[sg.Window]:
     SendfileLayout = [
         [sg.Text(f"{ease['title']}", font=('Sans serif', 16))],
         [sg.Text(' ')],
-        [sg.Text(ease['str']['send_0'])],
-        [sg.Text(ease['str']['send_1'])],
-        [sg.Text(ease['str']['send_2'])],
+        [sg.Text(_("Sometimes files are too big for attaching to e-mails."))],
+        [sg.Text(_("Most of these online file transfer services do not require a login."))],
+        [sg.Text(_("Select any provider to visit their website or attempt sending."))],
         [sg.Text(' ')],
         [
-            sg.Text(f"{ease['str']['combo']}: "),
+            sg.Text(_('Choose file transfer service: ')),
             sg.Combo(
                  list(sites.keys()),
                  default_value=sitename,
@@ -452,9 +357,9 @@ def create_send_window() -> Type[sg.Window]:
         [sg.Frame(layout=xfer_site, title=' ')], # title is workaround
         [sg.Text(' ')],
         [
-        sg.Button(ease['str']['send'], key='-send_send-', disabled=xfer_disabled),
-        sg.Button(f"{ease['str']['open']} URL", key='-visit_url-'),
-        sg.Button(ease['str']['cancel'], key='-send_cancel-')
+        sg.Button(_('Send'), key='-send_send-', disabled=xfer_disabled),
+        sg.Button(_('Open URL'), key='-visit_url-'),
+        sg.Button(_("Cancel"), key='-send_cancel-')
         ]
     ]
     
@@ -481,16 +386,16 @@ def create_send_window() -> Type[sg.Window]:
     # for sitename in sites.keys():
         
         # # build site info string
-        # site_sentence = f"{ease['str']['max_size']}: "
+        # site_sentence = f"{_('Max file size')}: "
         # site_sentence += f"{sites[sitename]['max_size_gb']} GB, "
-        # site_sentence += f"{ease['str']['expire']}: "
+        # site_sentence += f"{_('Expires (days)')}: "
         # site_sentence += f"{sites[sitename]['days_expire']}, "
-        # site_sentence += f"{ease['str']['req_login']}: "
+        # site_sentence += f"{_('Require log-in')}: "
         
         # if sites[sitename]['require_login']:
-            # site_sentence += ease['str']['yes']
+            # site_sentence += _('Yes')
         # else:
-            # site_sentence += ease['str']['no']
+            # site_sentence += _('No')
         
         # # automation button disabled/enabled status
         # xfer_disabled = False if sites[sitename]['automated'] else True
@@ -504,15 +409,15 @@ def create_send_window() -> Type[sg.Window]:
         
         
         # frame_construct = [
-# #            [sg.T('URL:'), sg.In(sites[sitename]['site_url'], disabled=True), sg.Button(ease['str']['open'], key='-visit_url-')],
-            # [sg.T(f"URL: {sites[sitename]['site_url']}"), sg.Button(ease['str']['open'], image_data=ease['icon_globe'], key='-visit_url-'), sg.Button('Send', image_data=ease['icon_trans'], disabled=xfer_disabled)],
+# #            [sg.T('URL:'), sg.In(sites[sitename]['site_url'], disabled=True), sg.Button(_('Open'), key='-visit_url-')],
+            # [sg.T(f"URL: {sites[sitename]['site_url']}"), sg.Button(_('Open'), image_data=ease['icon_globe'], key='-visit_url-'), sg.Button('Send', image_data=ease['icon_trans'], disabled=xfer_disabled)],
             # [sg.T(site_sentence)]
             # # [
-            # # sg.T(f"{ease['str']['max_size']}:"),
+            # # sg.T(f"{_('Max file size')}:"),
             # # sg.T(f"{sites[sitename]['max_size_gb']} GB"),
-            # # sg.T(f"{ease['str']['expire']}:"),
+            # # sg.T(f"{_('Expires (days)')}:"),
             # # sg.T(sites[sitename]['days_expire']),
-            # # sg.T(f"{ease['str']['req_login']}:"),
+            # # sg.T(f"{_('Require log-in')}:"),
             # # sg.T(require_login)]
         # ]
         
@@ -531,7 +436,7 @@ def create_send_window() -> Type[sg.Window]:
     # SendfileLayout.append([sg.Button('Close', key='-send_cancel-')])
 # #        [
 # #        sg.OK 
-# #        sg.Button(f"{ease['str']['send']}", key='-send_send-'),
+# #        sg.Button(f"{_('Send')}", key='-send_send-'),
 # #        sg.Cancel(ease['str']['cancel'], key='-send_cancel-')
 # #        ]
 # #    ]
@@ -560,22 +465,23 @@ def create_about_window() -> Type[sg.Window]:
         [sg.Text("a hopefully user-friendly graphical interface to the pyAesCrypt module.")],
         [sg.Text("It is distributed in the hope that it will be useful, but without any warranty.")],
         [sg.Text("See the GNU General Public License for more details.")],
-        [sg.Text(f"{ease['str']['contrib']}: {ease['git']}")],
+        [sg.Text(f"{_('Submit issues and new translations at')}: {ease['git']}")],
         [sg.Text(' ')],
         [sg.Text("Usage should be fairly straight-forward: Encrypt -> Send -> Decrypt")],
         [sg.Text(' ')],
-        [sg.Text(ease['str']['encrypting'], font=('Sans serif', 12))],
+        [sg.Text(_('Encrypting'), font=('Sans serif', 12))],
         [sg.Text("The sender clicks the Encrypt button, selects the file(s) to encrypt,")],
         [sg.Text("and encrypts them using a passphrase (password) of his or her choosing.")],
+        [sg.Text("It is recommended to use a full sentence as the passphrase.")],
         [sg.Text("This produces an encrypted AES Crypt v.2 file that has an .aes suffix.")],
         [sg.Text(' ')],
-        [sg.Text(ease['str']['sending'], font=('Sans serif', 12))],
+        [sg.Text(_('Sending'), font=('Sans serif', 12))],
         [sg.Text("The encrypted .aes file can be distributed over untrusted services like")],
         [sg.Text("e-mail or any of the file transfer services available when clicking Send.")],
         [sg.Text("Some services will provide a download link (URL) the recipient can use.")],
         [sg.Text("Remember: never send an encrypted file and its passphrase together!")],
         [sg.Text(' ')],
-        [sg.Text(ease['str']['decrypting'], font=('Sans serif', 12))],
+        [sg.Text(_('Decrypting'), font=('Sans serif', 12))],
         [sg.Text("Having received the encrypted .aes file through e-mail or a service (above),")],
         [sg.Text("the recipient simply clicks the Decrypt button, selects the (.aes) file and")],
         [sg.Text("enters the passphrase (password) provided separately by the sender.")],
@@ -586,7 +492,7 @@ def create_about_window() -> Type[sg.Window]:
         [sg.Text("EASE is not affiliated with any of the file transfer services mentioned, and")],
         [sg.Text("please submit an issue if any of the services are terminated or changed.")],
         [sg.Text(' ')],
-        [sg.Button(ease['str']['homepage'], key='-github-'), sg.Button('OK', key='-about_ok-')]
+        [sg.Button(_('Homepage'), key='-github-'), sg.Button('OK', key='-about_ok-')]
     ]
     
     
@@ -614,27 +520,32 @@ def get_infostring_from_key(key: str) -> Tuple[str, str, str, bool]:
     xfer_disabled = False if sites[key]['automated'] else True
     
     # build site info string
-    site_sentence = f"{ease['str']['max_size']}: "
-    site_sentence += f"{sites[key]['max_size_gb']}, "
-    site_sentence += f"{ease['str']['expire']}: "
-    site_sentence += f"{sites[key]['days_expire']}, "
+    site_sentence = _('Max file size')
+    site_sentence += f": {sites[key]['max_size_gb']}, "
+    site_sentence += _('Expires (days)')
+    site_sentence += f": {sites[key]['days_expire']}, "
             
     # finish info string
+    site_sentence += _('Require log-in')
+    site_sentence += ': '
     if sites[key]['require_login']:
-        site_sentence += f"{ease['str']['req_login']}: {ease['str']['yes']}"
+        site_sentence += _('Yes')
         xfer_disabled = True # override (avoids this whole bag of bugs)
     else:
-        site_sentence += f"{ease['str']['req_login']}: {ease['str']['no']}"
+        site_sentence += _('No')
     
     # get site cap (limitations) info
+    limitations = _('Limitations')
     site_cap = sites[key]['limitations']
     if site_cap is None:
-        site_cap = f"{ease['str']['limit']}: N/A"
+        site_cap = f"{limitations}: N/A"
     else:
-        site_cap = f"{ease['str']['limit']}: {site_cap}"
+        site_cap = f"{limitations}: {site_cap}"
     
     # get faq (URL)
-    site_faq = f"{ease['str']['faq']}: {sites[key]['faq']}"
+    site_faq = _('FAQ')
+    site_faq += ': '
+    site_faq += sites[key]['faq']
      
     return site_sentence, site_cap, site_faq, xfer_disabled
     
@@ -671,12 +582,16 @@ def get_password_strength(uinput_passphrase: str) -> str:
     We are not evaluating password policies, just providing visual feedback
     Call using get_password_strength(Encrypt_value['uinput_passphrase'])
     """
+    # string wrangling
+    str_entr = _("Passphrase entropy bits")
+    str_comp = _("complexity")
+    
     if uinput_passphrase is None or uinput_passphrase == '':
-        return f"{ease['str']['passphrase']} entropy bits: 0.0, complexity: 0.00"
+        return f"{str_entr}: 0.0, {str_comp}: 0.00"
 
     stats = PasswordStats(uinput_passphrase)
     
-    return f"{ease['str']['passphrase']} entropy bits: {stats.entropy_bits:0.1f}, complexity: {stats.strength():0.2f}"
+    return f"{str_entr}: {stats.entropy_bits:0.1f}, {str_comp}: {stats.strength():0.2f}"
 
 
 def archive(file_basename: str, use_tar: bool, use_compression: bool, input_files: list) -> Tuple[list, str]:
@@ -780,9 +695,14 @@ def create_spinner(show_text: str, show_time: float) -> Type[sg.Window]:
     Helper function to create (and re-create) "Working..." popup
     Returns window object. Used once if user do not click X to close.
     """
-#    elapsed_time = '0.2' # because we have a hard-coded 0.2 sec head start ..
-    spinner_layout = [[ sg.T(f"{show_text}.. {ease['str']['patience']}.\n{ease['str']['elapsed']}: {show_time} {ease['str']['secs']}", key='-spinner_text-') ]]
-    # changed from no_titlebar=True, because it was weird without it
+    
+    # Make strings available to gettext :P
+    be_patient = _('This might take a while.')
+    el_time = _('Elapsed time')
+    secs = _('seconds')
+    
+    # create spinner
+    spinner_layout = [[ sg.T(f"{show_text}.. {be_patient}.\n{el_time}: {show_time} {secs}", key='-spinner_text-') ]]
     return sg.Window(f"{show_text} ..", layout=spinner_layout, grab_anywhere=True, keep_on_top=True, finalize=True)
 
 
@@ -824,11 +744,11 @@ def aescrypt_worker(encrypt: bool, input_f: str, output_f: str, user_passphrase:
     
     
     if encrypt:
-        string_action= ease['str']['encryption']
+        string_action= _('Encryption')
         aes_exec = pyAesCrypt.encryptFile
         
     else:
-        string_action= ease['str']['decryption']
+        string_action= _('Decryption') # not sure this is in use .. ? TODO
         aes_exec = pyAesCrypt.decryptFile
     
     try:
@@ -859,14 +779,14 @@ def run_in_the_background(worker_to_run: str, worker_args: list):
     
     if worker_to_run == 'archive':
         worker_func = archive_worker
-        show_text = ease['str']['archiving']        
+        show_text = _('Archiving')        
     elif worker_to_run == 'unarchive':
         worker_func = unarchive_worker
-        show_text = ease['str']['extracting']
+        show_text = _('Extracting')
         number_of_args = 2 # only has 2 args + output_dict and output_index
     else:
         worker_func = aescrypt_worker
-        show_text = ease['str']['encrypting'] if worker_to_run == 'encrypt' else ease['str']['decrypting']
+        show_text = _('Encrypting') if worker_to_run == 'encrypt' else _('Decrypting')
     
     
     # (re)set ease dict index 'thread' to store output values from separate thread
@@ -910,7 +830,13 @@ def run_in_the_background(worker_to_run: str, worker_args: list):
             spinner = create_spinner(show_text, elapsed_time)
         
         if spinner_e == '__TIMEOUT__':
-            spinner['-spinner_text-'].update(f"{show_text}.. {ease['str']['patience']}.\n{ease['str']['elapsed']}: {time.time() - start_time:0.1f} {ease['str']['secs']}")
+            # Make strings available to gettext :P
+            be_patient = _('This might take a while.')
+            el_time = _('Elapsed time')
+            secs = _('seconds')
+            elapsed_time = f"{time.time() - start_time:0.1f}"
+            
+            spinner['-spinner_text-'].update(f"{show_text}.. {be_patient}.\n{el_time}: {elapsed_time} {secs}")
     
     
     # join threads
@@ -934,7 +860,7 @@ if __name__ == '__main__':
     ease['password'] = None # Not in use
     ease['input'] = None    # Not in use
     ease['output'] = None   # Not in use
-    ease['language'] = 'English'
+    ease['language'] = 'English' # Not in use
     ease['archive'] = False
     ease['use_tar'] = True
     ease['compression'] = False # use store
@@ -948,13 +874,8 @@ if __name__ == '__main__':
     # Set current output dir to default
     ease['output_dir'] = ease['home_dir']
     
-    # color theme
+    # PySimpleGUIQt color theme
     sg.ChangeLookAndFeel('SystemDefaultForReal')
-    #sg.theme(set_theme)
-    
-    # Set GUI strings language
-    set_gui_strings(ease['language']) # default
-    #set_gui_strings('Norwegian') # test Norwegian
     
     # Icons8 icon file (MIT) Copyright (C) The author(s) 
     ease['icon_decrypt'] = b'iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAB\
@@ -1133,9 +1054,10 @@ if __name__ == '__main__':
                     Path(xfile).unlink(missing_ok=True)
                     print(f"removed {xfile}") # debug
                 except Exception as e:
+                    err_str = _('Error removing file')
                     sg.popup_error(
-                                   f"Error removing file {xfile}.\nException: {e}",
-                                   title=f"{ease['str']['error']}"
+                                   f"{err_str} {xfile}.\n{e}",
+                                   title=_('Error')
                                    )
             files_to_remove.clear()
         
@@ -1207,17 +1129,20 @@ if __name__ == '__main__':
                             archive_files = True
                            
                         else:
-                            sg.popup_error(f"{ease['err']['isnotfile']}:\n'{uinput_file}'", title=f"{ease['str']['error']}")
+                            err_str = _('Selected input is not recognized as file(s)')
+                            sg.popup_error(f"{err_str}:\n'{uinput_file}'", title=_('Error'))
                             show_encrypt = False
                         
                         
                         # Check password length within third-party libs parameters
                         # Note: EASE is not designed to enforce password policies.
                         if len(uinput_passphrase) < 6:
-                            sg.popup_error(f"{ease['str']['error']}: len(pass) < 6. {ease['str']['aborting']}!")
+                            err_str = _('Error: password too short')
+                            sg.popup_error(err_str, title=_('Error'))
                             show_encrypt = False
                         elif len(uinput_passphrase) > 1024:
-                            sg.popup_error(f"{ease['str']['error']}: len(pass) > 1024. {ease['str']['aborting']}!")
+                            err_str = _('Error: password too long')
+                            sg.popup_error(err_str, title=_('Error'))
                             show_encrypt = False
                         
                         
@@ -1233,15 +1158,19 @@ if __name__ == '__main__':
                             archive_target_location = Path(uinput_folder) / Path(uinput_basename).stem
                             run_in_the_background('archive', [str(archive_target_location), use_tar, use_compression, uinput_files])
                             
-                            print(f"got actual_output candidate as {ease['thread'][1]}")
+                            #print(f"got actual_output candidate as {ease['thread'][1]}")
                             
                             # save outputs here (ease['thread'] is re-usable)
                             archive_outputs = ease['thread'] # Note: tuple type
                             number_of_archived_items = len(archive_outputs[0])
                             if number_of_archived_items != number_of_inputs:
-                                sg.popup_error(f"{ease['err']['arch_some']}: {number_of_archived_items} / {number_of_inputs}. {ease['str']['aborting']}!", title=f"{ease['str']['archiving']} {ease['str']['error'].lower()}")
+                                err_str = _('Could not archive any files')
+                                err_tit = _('Archiving error')
+                                sg.popup_error(f"{err_str}: {number_of_archived_items} / {number_of_inputs}. {_('Aborting')}!", title=err_tit)
                             elif number_of_archived_items == 0:
-                                sg.popup_error(f"{ease['err']['arch_none']}. {ease['str']['aborting']}!", title=f"{ease['str']['archiving']} {ease['str']['error'].lower()}")
+                                err_str = _('Could not archive all selected files')
+                                err_tit = _('Archiving error')
+                                sg.popup_error(err_str, title=err_tit)
                             else:
                                 actual_input = archive_outputs[1]
                                 proceed_with_encryption = True
@@ -1275,9 +1204,10 @@ if __name__ == '__main__':
                                 inputs_str = '\n'.join(inputs_str)
                                 
                                 # success popup
+                                err_str = _('Successfully encrypted the input file(s)')
                                 sg.popup_ok(
-                                    f"{ease['enc']['success']}:\n\n{inputs_str}\n\n({Path(actual_output).name})",
-                                    title=f"{ease['str']['success']}!"
+                                    f"{err_str}:\n\n{inputs_str}\n\n({Path(actual_output).name})",
+                                    title=_("Success!")
                                 )
                                 
                                 # remove input file if tar or zip
@@ -1285,18 +1215,22 @@ if __name__ == '__main__':
                                     files_to_remove.append(actual_input) # mark for deletion
                                 
                             elif ease['thread'][0] == 1:
-                                sg.popup_error(f"I/O {ease['str']['error']}: {ease['thread'][1]}", title=f"I/O {ease['str']['error']}")
+                                err_str = _('I/O error')
+                                sg.popup_error(f"{err_str}: {ease['thread'][1]}", title=err_str)
                             elif ease['thread'][0] == 2:
-                                sg.popup_error(f"{ease['str']['encryption']} {ease['str']['error']}: {ease['thread'][1]}", title=f"{ease['str']['encryption']} {ease['str']['error']}")
+                                err_str = _('Encryption error')
+                                sg.popup_error(f"{err_str}: {ease['thread'][1]}", title=err_str)
                             else:
-                                sg.popup_error("Unhandled: ease['thread'] not in 0-2") # debug
+                                err_str = _('Unhandled exception')
+                                sg.popup_error(f"{err_str}: ease['thread'] not in 0-2")
                         
                         
                         # Quit to main either way
                         show_encrypt = False
                         
                     else:
-                        sg.popup_error(f"{ease['err']['notfolder']}: '{uinput_folder}'. {ease['str']['aborting']}!")
+                        err_str = _('Selected folder is not a folder')
+                        sg.popup_error(f"{_err_str}: '{uinput_folder}'.")
                         show_encrypt = False
                 else:
                     # an "else" here is probably input into passphrase box
@@ -1369,10 +1303,12 @@ if __name__ == '__main__':
                             if ease['thread'][0] == 0:
                                 pass
                             elif ease['thread'][0] == 1:
-                                sg.popup_error(f"I/O {ease['str']['error']}: {ease['thread'][1]}", title=f"I/O {ease['str']['error']}")
+                                err_str = _('I/O error')
+                                sg.popup_error(f"{err_str}: {ease['thread'][1]}", title=err_str)
                                 show_decrypt = False
                             elif ease['thread'][0] == 2:
-                                sg.popup_error(f"{ease['str']['error']} {ease['str']['decryption']}: {ease['thread'][1]}", title=f"{ease['str']['decryption']} {ease['str']['error']}")
+                                err_str = _('Decryption error')
+                                sg.popup_error(f"{err_str}: {ease['thread'][1]}", title=err_str)
                                 show_decrypt = False
                             
                             
@@ -1395,7 +1331,8 @@ if __name__ == '__main__':
                                     if type(ease['thread'][0]) is list:
                                         pass
                                     elif ease['thread'][0] == 'error':
-                                        sg.popup_error(f"{ease['str']['error']}: {ease['thread'][1]}. {ease['str']['aborting']}", title=ease['str']['error'])
+                                        err_str = _('Error')
+                                        sg.popup_error(f"{err_str}: {ease['thread'][1]}.", title=err_str)
                                         show_decrypt = False # TODO is this correct state to break loop??
                                     else:
                                         sg.popup_error("Unhandled else in unarchiving shenanigans :( thread not in list or 'error'.")
@@ -1419,21 +1356,24 @@ if __name__ == '__main__':
                                 
                                 # Give visual feedback
                                 if number_of_extracted_items == number_of_archived_items:
+                                    pop_msg = _('Successfully decrypted input file(s)')
                                     sg.popup_ok(
-                                    f"{ease['dec']['success']}: {number_of_extracted_items} / {number_of_archived_items}",
-                                    title=f"{ease['str']['success']}!"
+                                    f"{pop_msg}: {number_of_extracted_items} / {number_of_archived_items}",
+                                    title=_("Success")
                                     )
                                     
                                 else:
+                                    pop_msg = _('Successfully decrypted input file(s)')
+                                    pop_two = _('Skipped items')
                                     sg.popup_ok(
-                                    f"{ease['dec']['success']}: {number_of_extracted_items} / {number_of_archived_items}\n\n{ease['dec']['skipped']}:\n{skipped_files}",
+                                    f"{pop_msg}: {number_of_extracted_items} / {number_of_archived_items}\n\n{pop_two}:\n{skipped_files}",
                                     title='Info'
                                     )
                                 
                             else:
+                                err_str = _('Selected input is not recognized as file(s)')
                                 sg.popup_error(
-                                    f"{ease['err']['isnotfile']}: {output_file}",
-                                    title=ease['str']['error']
+                                    f"{err_str}: {output_file}", title=_('Error')
                                     )
                                 
                                 show_decrypt = False
@@ -1447,14 +1387,14 @@ if __name__ == '__main__':
                             
                         else:
                             sg.popup_error(
-                                f"'{uinput_file}' != AES v2 (pyAesCrypt). {ease['str']['aborting']}!",
-                                title=ease['str']['error']
+                                f"'{uinput_file}' != AES v2 (pyAesCrypt).",
+                                title=_('Error')
                                 )
                             show_decrypt = False
                     else:
+                        err_str = _('Selected input is not recognized as file(s)')
                         sg.popup_error(
-                            f"{ease['err']['isnotfile']}: '{uinput_file}'. {ease['str']['aborting']}!",
-                            title=ease['str']['error']
+                            f"{err_str}: '{uinput_file}'.", title=_('Error')
                             )
                         show_decrypt = False
                     
@@ -1505,18 +1445,20 @@ if __name__ == '__main__':
                     try:
                         target_url = ease['sites'][target_key]['site_url']
                     except Exception as e:
+                        err_str = _('Error')
                         sg.popup_error(
-                                       f"{ease['str']['error']}: {e}",
-                                       title=ease['str']['error']
+                                       f"{err_str}: {e}",
+                                       title=_('Error')
                                        )
                         show_send = False # quit to main
                     
                     try:
                         webbrowser.open(target_url)
                     except Exception as e:
+                        err_str = _('Error')
                         sg.popup_error(
-                                       f"{ease['str']['error']}: {e}",
-                                       title=ease['str']['error']
+                                       f"{err_str}: {e}",
+                                       title=_('Error')
                                        )
                         show_send = False # quit to main
                     
@@ -1548,9 +1490,10 @@ if __name__ == '__main__':
                     try:
                         webbrowser.open(ease['git'])
                     except Exception as e:
+                        err_str = _('Error')
                         sg.popup_error(
-                                       f"{ease['str']['error']}: {e}",
-                                       title=ease['str']['error']
+                                       f"{err_str}: {e}",
+                                       title=_('Error')
                                        )
                         show_about = False # quit to main
             
