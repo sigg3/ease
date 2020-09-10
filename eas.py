@@ -136,8 +136,10 @@ def create_main_window() -> Type[sg.Window]:
     # Set icon text
     caption_encrypt = _('Encrypt')
     caption_decrypt = _('Decrypt')
-    caption_send    = f" {_('Send')}"   # space added for English
-    caption_about   = f" {_('About')}"  # Qt justification :( # TODO
+    caption_send = _('Send')
+    caption_about = _('About')
+    caption_send    = f" {caption_send}"   # space added for English
+    caption_about   = f" {caption_about}"  # Qt justification :( # TODO
     
     
     # Set layout
@@ -853,8 +855,12 @@ def run_in_the_background(worker_to_run: str, worker_args: list):
 if __name__ == '__main__':
     # initiate ease settings dict with sane defaults
     ease = {}
-    ease['name'] = 'EASE' # The name of the game
+    
+    # Name/Logo and Window Title (leave as-is, do not translate)
+    ease['name'] = 'EASE'
     ease['title'] = f"{ease['name']}: Encrypt And Send with {ease['name']}"
+    
+    # Sane defaults
     ease['git'] = "https://github.com/sigg3/ease"
     ease['buffer'] = 64 * 1024
     ease['password'] = None # Not in use
@@ -863,7 +869,7 @@ if __name__ == '__main__':
     ease['language'] = 'English' # Not in use
     ease['archive'] = False
     ease['use_tar'] = True
-    ease['compression'] = False # use store
+    ease['compression'] = False # default: use store (no compression)
     
     # Set "home" dir (our default)
     if Path.home().is_dir():
