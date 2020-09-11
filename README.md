@@ -1,7 +1,7 @@
 # EASE: <ins>E</ins>ncrypt <ins>A</ins>nd <ins>S</ins>end with <ins>E</ins>ASE
 
-Simple utility for symmetric encryption of files or file archives
-prior to distribution over untrusted services (like e-mail).
+Simple utility for symmetric encryption of files or file archives prior to distribution over untrusted services (like e-mail).
+AES256-CBC encryption provided by pyAesCrypt (cryptography), and passphrase evaluation by password_strength and zxcvbn-python.
 Graphical user interface using PySimpleGUIQt (Qt), with localization (translations) provided by gettext.
 
 EASE is specifically made for non-expert users, which means that all options have sane defaults. The user only needs to specify input file(s) and a passphrase, and EASE will handle the rest. Let's bring cryptography to the masses!
