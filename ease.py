@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # coding=utf-8
-# EaSE: Encrypt and Send with EaSE
+# EASE: Encrypt and Send with EaSE
 # Simple utility for symmetric encryption of files or file archives
 # prior to distribution over untrusted services (like e-mail).
 #
@@ -38,21 +38,18 @@ _ = gettext.gettext
 
 
 # List of issues, todos and bugs (by priority)
-# TODO
+# TODO password evaluation
 # zxcvbn-python, add "evaluate" button under passphrase entry on Encrypt
 # 
-# TODO
-# OOP branch
+# TODO OOP branch
+# It's time to re-do this project OOP
 # 
-# TODO
-# Functional branch
-#
 # TODO sending
 # Using selenium is not recommended at this stage, because we will need
 # a separate geckodriver install (and probably break ToS).
 # Using webbrowser instead, we can serve a number of convenient links
 # for sharing file(s), and also a button to attach to e-mail message.
-
+#
 # TODO
 # in pysimplegui june 2020, signalling windows from other threads was added.
 # Look into whether this is a worthwhile change to ease.
@@ -62,7 +59,9 @@ _ = gettext.gettext
 # TODO keyfiles
 # while we want to keep things simple, it's only a matter of time before
 # someone requests asymmetric encryption
-
+#
+# TODO Functional branch
+# If we are going to learn methodology, better do it functionally too.
 
 def setup_transmitters() -> dict:
     """
@@ -379,84 +378,6 @@ def create_send_window() -> Type[sg.Window]:
         sg.Button(_("Cancel"), key='-send_cancel-')
         ]
     ]
-    
-    # TODO REWRITE AS A DROP-DOWN THAT RE-DRAWS the frame below
-    # Show 1 provider at the time
-    # with buttons visit URL and send file below ..
-    # TODO
-    
-    # for sitename in sites.keys():
-        
-        # site_sentence, xfer_disabled = get_infostring_from_key(sitename)    
-        # if is_first_one:
-            # # set as default / initial value
-        
-            # is_first_one = False
-        # else:
-            
-        
-        
-    
-    
-    
-    # # Populate window with frames containing sites
-    # for sitename in sites.keys():
-        
-        # # build site info string
-        # site_sentence = f"{_('Max file size')}: "
-        # site_sentence += f"{sites[sitename]['max_size_gb']} GB, "
-        # site_sentence += f"{_('Expires (days)')}: "
-        # site_sentence += f"{sites[sitename]['days_expire']}, "
-        # site_sentence += f"{_('Require log-in')}: "
-        
-        # if sites[sitename]['require_login']:
-            # site_sentence += _('Yes')
-        # else:
-            # site_sentence += _('No')
-        
-        # # automation button disabled/enabled status
-        # xfer_disabled = False if sites[sitename]['automated'] else True
-        
-# #        [sg.Button(
-# #                    caption_encrypt,
-# #                    image_data=icon_encrypt,
-# #                    key='-button_encrypt-',
-# #                    font=("Helvetica", 16)
-# #                    ),
-        
-        
-        # frame_construct = [
-# #            [sg.T('URL:'), sg.In(sites[sitename]['site_url'], disabled=True), sg.Button(_('Open'), key='-visit_url-')],
-            # [sg.T(f"URL: {sites[sitename]['site_url']}"), sg.Button(_('Open'), image_data=ease['icon_globe'], key='-visit_url-'), sg.Button('Send', image_data=ease['icon_trans'], disabled=xfer_disabled)],
-            # [sg.T(site_sentence)]
-            # # [
-            # # sg.T(f"{_('Max file size')}:"),
-            # # sg.T(f"{sites[sitename]['max_size_gb']} GB"),
-            # # sg.T(f"{_('Expires (days)')}:"),
-            # # sg.T(sites[sitename]['days_expire']),
-            # # sg.T(f"{_('Require log-in')}:"),
-            # # sg.T(require_login)]
-        # ]
-        
-        # # append frame structure feat. table
-        # SendfileLayout.append(
-            # [sg.Frame(
-                # layout=frame_construct,
-                # title=f"{sitename} ({ease['str']['updated']}:{sites[sitename]['changed']})"
-                # )
-            # ],
-            
-        # )
-        # SendfileLayout.append([sg.T(' ')],)
-    
-    # # Add Close/OK button at the bottom
-    # SendfileLayout.append([sg.Button('Close', key='-send_cancel-')])
-# #        [
-# #        sg.OK 
-# #        sg.Button(f"{_('Send')}", key='-send_send-'),
-# #        sg.Cancel(ease['str']['cancel'], key='-send_cancel-')
-# #        ]
-# #    ]
     
     SendFile = sg.Window(
                          ease['title'],
