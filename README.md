@@ -47,10 +47,10 @@ Send file(s)
 ![Send](https://raw.githubusercontent.com/sigg3/ease/master/screenshots/ease_send.png)
 
 
-## Run test-version
+## Run test-version (linux)
 ```
-git clone https://github.com/sigg3/ease
-cd ease
-pip3 install -r requirements.txt
-python3 ease.py
+$ git clone https://github.com/sigg3/ease
+$ cd ease
+$ pip3 install -r requirements.txt
+$ python3 ease.py
 ```
