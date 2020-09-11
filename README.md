@@ -4,13 +4,34 @@ Simple utility for symmetric encryption of files or file archives prior to distr
 AES256-CBC encryption provided by pyAesCrypt (cryptography), and passphrase evaluation by password_strength and zxcvbn-python.
 Graphical user interface using PySimpleGUIQt (Qt), with translations provided by gettext.
 
-Binaries and packages not yet available, but are planned. Meanwhile, see [install instructions for test-version](https://github.com/sigg3/ease/blob/master/README.md#run-test-version-linux).
-
 EASE is specifically made for non-expert users, which means that all options have sane defaults. The user only needs to specify input file(s) and a passphrase, and EASE will handle the rest. Let's bring cryptography to the masses!
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 (Black style not yet implemented, but am working on those lengthy lines..)
+
+## Installation
+
+Microsoft Windows and Apple OS binaries and packages are plannet but not yet available.
+
+### Run test-version (linux)
+```
+$ # create a directory for ease
+$ mkdir ease && cd ease
+$
+$ # EITHER just get necessary files
+$ wget https://raw.githubusercontent.com/sigg3/ease/master/ease.py
+$ wget https://raw.githubusercontent.com/sigg3/ease/master/requirements.txt
+$
+$ # OR just clone everything
+$ git clone https://github.com/sigg3/ease .
+$
+$ # THEN install deps
+$ pip3 install -r requirements.txt
+$
+$ # FINALLY, run it
+$ python3 ease.py
+```
 
 ## Translations
 
@@ -47,22 +68,3 @@ Only input file and passphrase fields require user interaction.
 Send file(s)
 
 ![Send](https://raw.githubusercontent.com/sigg3/ease/master/screenshots/ease_send.png)
-
-
-## Run test-version (linux)
-```
-$ mkdir ease && cd ease
-$
-$ # EITHER clone everything
-$ git clone https://github.com/sigg3/ease .
-$
-$ # OR just get necessary files
-$ wget https://raw.githubusercontent.com/sigg3/ease/master/ease.py
-$ wget https://raw.githubusercontent.com/sigg3/ease/master/requirements.txt
-$
-$ # THEN install deps
-$ pip3 install -r requirements.txt
-$
-$ # FINALLY, just run it
-$ python3 ease.py
-```
