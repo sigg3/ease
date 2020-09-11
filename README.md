@@ -14,7 +14,9 @@ EASE is specifically made for non-expert users, which means that all options hav
 
 EASE is currently available in: English, Norwegian.
 
-Find locale .pot files in the locales directory. EASE only uses one domain (base). Please be warned: _String set is incomplete and subject to change._ I will remove this warning when the string set is stable.
+Find locale .pot files in the locales directory. EASE only uses one domain (base). Using a GUI application like Poedit (https://poedit.net/) it's simple to translate EASE to your language.
+
+Please be warned: _String set is incomplete and subject to change._ I will remove this warning when the string set is stable.
 
 
 ## Screenshots
