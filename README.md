@@ -26,3 +26,9 @@ Encrypt file(s)
 Decrypt file(s)
 
 ![Decrypt](https://raw.githubusercontent.com/sigg3/ease/master/screenshots/ease_decrypt.png)
+
+
+
+Send file(s)
+
+![Send](https://raw.githubusercontent.com/sigg3/ease/master/screenshots/ease_send.png)
