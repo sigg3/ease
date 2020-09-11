@@ -17,7 +17,7 @@ Main window
 
 ![Main window](https://raw.githubusercontent.com/sigg3/ease/master/screenshots/ease_main_full.png)
 
-This is the first, friendly window of EASE. If you want to encrypt a file, click Encrypt. If you want to send a file you have encrypted, click Send. If you want to decrypt a file you have received, click Send.
+This is the first, friendly window of EASE. If you want to encrypt a file, click Encrypt. If you want to send a file you have encrypted, click Send. If you want to decrypt a file you have received, click Decrypt.
 
 
 Encrypt file(s)
