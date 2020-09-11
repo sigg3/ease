@@ -2,7 +2,9 @@
 
 Simple utility for symmetric encryption of files or file archives prior to distribution over untrusted services (like e-mail).
 AES256-CBC encryption provided by pyAesCrypt (cryptography), and passphrase evaluation by password_strength and zxcvbn-python.
-Graphical user interface using PySimpleGUIQt (Qt), with translations provided by gettext. EASE lets you:
+Graphical user interface using PySimpleGUIQt (Qt), with translations provided by gettext.
+
+EASE will let you:
 * Encrypt files you want to send
 * Send files you have encrypted
 * Decrypt files you have received
