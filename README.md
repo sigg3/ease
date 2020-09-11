@@ -2,7 +2,9 @@
 
 Simple utility for symmetric encryption of files or file archives
 prior to distribution over untrusted services (like e-mail).
-Graphical user interface using PySimpleGUIQt (Qt).
+Graphical user interface using PySimpleGUIQt (Qt), with localization (translations) provided by gettext.
+
+EASE is specifically made for non-expert users. Let's bring cryptography to the masses!
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
