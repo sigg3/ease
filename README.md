@@ -4,6 +4,8 @@ Simple utility for symmetric encryption of files or file archives prior to distr
 AES256-CBC encryption provided by pyAesCrypt (cryptography), and passphrase evaluation by password_strength and zxcvbn-python.
 Graphical user interface using PySimpleGUIQt (Qt), with translations provided by gettext.
 
+Binaries and packages not yet available, but .deb, .exe and .dmg are planned. See install instructions for test-version at the end.
+
 EASE is specifically made for non-expert users, which means that all options have sane defaults. The user only needs to specify input file(s) and a passphrase, and EASE will handle the rest. Let's bring cryptography to the masses!
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
