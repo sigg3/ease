@@ -38,6 +38,18 @@ $ # FINALLY, run it
 $ python3 ease.py
 ```
 
+## Roadmap
+- [ ] Object oriented modelling
+- [ ] Automate sending files over selected service
+- [ ] package (.deb) for GNU/Linux
+- [ ] binaries for Microsoft Windows
+- [ ] binaries for Apple OS
+- [x] Visit an online file transport service
+- [x] Encrypt file or group of files
+- [x] Archiving files (with or without compression)
+- [x] Decrypt files
+
+
 ## Translations
 
 EASE is currently available in: English, Norwegian.
