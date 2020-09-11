@@ -12,7 +12,7 @@ EASE is specifically made for non-expert users, which means that all options hav
 
 ## Installation
 
-Microsoft Windows and Apple OS binaries and packages are plannet but not yet available.
+Microsoft Windows and Apple OS binaries and GNU/Linux packages are plannet but not yet available.
 
 ### Run test-version (linux)
 ```
