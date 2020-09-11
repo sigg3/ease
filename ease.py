@@ -24,16 +24,29 @@ from pathlib import Path
 from password_strength import PasswordStats
 from typing import Tuple, Type
 from threading import Thread
-import datetime, time, zipfile, tarfile, copy, webbrowser
+import datetime, time, zipfile, tarfile, copy, webbrowser, gettext
 
-# Enable translation
-import gettext
+# Enable translations
 _ = gettext.gettext
 
 
+# debugging gettext
+#import IPython
+# save_me_beer = gettext.find('base', 'locales', all=True)
+# IPython.embed()
+# breakpoint()
 
 
 # List of issues, todos and bugs (by priority)
+# TODO
+# zxcvbn-python, add "evaluate" button under passphrase entry on Encrypt
+# 
+# TODO
+# OOP branch
+# 
+# TODO
+# Functional branch
+#
 # TODO sending
 # Using selenium is not recommended at this stage, because we will need
 # a separate geckodriver install (and probably break ToS).
@@ -62,6 +75,8 @@ def setup_transmitters() -> dict:
     Automation disabled at the time of writing.
     Setting automated to True entails writing an linking to a function to
     deal with automating file upload (e.g. selenium script).
+    
+    Use _('string encapsulation') for strings that should be translated.
     """
     
     # setup return
@@ -76,7 +91,7 @@ def setup_transmitters() -> dict:
     list_of_sites[sitename]['max_size_gb'] = '5 GB'
     list_of_sites[sitename]['require_login'] = False
     list_of_sites[sitename]['automated'] = False
-    list_of_sites[sitename]['limitations'] = 'files stored for 90 days.'
+    list_of_sites[sitename]['limitations'] = _("files stored for 90 days.")
     list_of_sites[sitename]['faq'] = 'https://www.sendgb.com/en/faq.html'
     
     # sendgb.com (added 2020-09-07)
@@ -85,10 +100,10 @@ def setup_transmitters() -> dict:
     list_of_sites[sitename]['changed'] = '2020-09-07'
     list_of_sites[sitename]['site_url'] = f'https://{sitename}'
     list_of_sites[sitename]['days_expire'] = 14
-    list_of_sites[sitename]['max_size_gb'] = 'None'
+    list_of_sites[sitename]['max_size_gb'] = _('None')
     list_of_sites[sitename]['require_login'] = False
     list_of_sites[sitename]['automated'] = False
-    list_of_sites[sitename]['limitations'] = "files 0-2 GB in size must queue."
+    list_of_sites[sitename]['limitations'] = _("files 0-2 GB in size must queue.")
     list_of_sites[sitename]['faq'] = 'https://faq.fromsmash.com/'
     
     # sendgb.com (added 2020-09-07)
@@ -100,7 +115,7 @@ def setup_transmitters() -> dict:
     list_of_sites[sitename]['max_size_gb'] = '3 GB'
     list_of_sites[sitename]['require_login'] = False
     list_of_sites[sitename]['automated'] = False
-    list_of_sites[sitename]['limitations'] = "store up to 5GB per month"
+    list_of_sites[sitename]['limitations'] = _("store up to 5GB per month")
     list_of_sites[sitename]['faq'] = "https://surgesend.com/help"
     
     # dropbox (added 2020-09-08)
@@ -112,7 +127,7 @@ def setup_transmitters() -> dict:
     list_of_sites[sitename]['max_size_gb'] = '2 GB'
     list_of_sites[sitename]['require_login'] = True
     list_of_sites[sitename]['automated'] = False
-    list_of_sites[sitename]['limitations'] = "free account gives 2GB storage total"
+    list_of_sites[sitename]['limitations'] = _("free account gives 2GB storage total")
     list_of_sites[sitename]['faq'] = "https://www.dropbox.com/basic"
     
     
@@ -459,42 +474,45 @@ def create_about_window() -> Type[sg.Window]:
     Helper function to create (and re-create) an about window.
     Returns a window object to allow assignment to var in global scope.
     """
+    
+    contrib = _('Submit issues and new translations at')
+    
     # Window layout
     AboutLayout = [
         [sg.Text(f"{ease['title']}", font=('Sans serif', 16))],
         [sg.Text(' ')],
-        [sg.Text("EASE is written by Sigbjørn Smelror (c) 2020, GNU GPL v.3+, to provide")],
-        [sg.Text("a hopefully user-friendly graphical interface to the pyAesCrypt module.")],
-        [sg.Text("It is distributed in the hope that it will be useful, but without any warranty.")],
-        [sg.Text("See the GNU General Public License for more details.")],
-        [sg.Text(f"{_('Submit issues and new translations at')}: {ease['git']}")],
+        [sg.Text(_("EASE is written by Sigbjørn Smelror (c) 2020, GNU GPL v.3+, to provide"))],
+        [sg.Text(_("a hopefully user-friendly graphical interface to the pyAesCrypt module."))],
+        [sg.Text(_("It is distributed in the hope that it will be useful, but without any warranty."))],
+        [sg.Text(_("See the GNU General Public License for more details."))],
+        [sg.Text(f"{contrib}: {ease['git']}")],
         [sg.Text(' ')],
-        [sg.Text("Usage should be fairly straight-forward: Encrypt -> Send -> Decrypt")],
+        [sg.Text(_("Usage should be fairly straight-forward: Encrypt -> Send -> Decrypt"))],
         [sg.Text(' ')],
         [sg.Text(_('Encrypting'), font=('Sans serif', 12))],
-        [sg.Text("The sender clicks the Encrypt button, selects the file(s) to encrypt,")],
-        [sg.Text("and encrypts them using a passphrase (password) of his or her choosing.")],
-        [sg.Text("It is recommended to use a full sentence as the passphrase.")],
-        [sg.Text("This produces an encrypted AES Crypt v.2 file that has an .aes suffix.")],
+        [sg.Text(_("The sender clicks the Encrypt button, selects the file(s) to encrypt,"))],
+        [sg.Text(_("and encrypts them using a passphrase (password) of his or her choosing."))],
+        [sg.Text(_("It is recommended to use a full sentence as the passphrase."))],
+        [sg.Text(_("This produces an encrypted AES Crypt v.2 file that has an .aes suffix."))],
         [sg.Text(' ')],
         [sg.Text(_('Sending'), font=('Sans serif', 12))],
-        [sg.Text("The encrypted .aes file can be distributed over untrusted services like")],
-        [sg.Text("e-mail or any of the file transfer services available when clicking Send.")],
-        [sg.Text("Some services will provide a download link (URL) the recipient can use.")],
-        [sg.Text("Remember: never send an encrypted file and its passphrase together!")],
+        [sg.Text(_("The encrypted .aes file can be distributed over untrusted services like"))],
+        [sg.Text(_("e-mail or any of the file transfer services available when clicking Send."))],
+        [sg.Text(_("Some services will provide a download link (URL) the recipient can use."))],
+        [sg.Text(_("Remember: never send an encrypted file and its passphrase together!"))],
         [sg.Text(' ')],
         [sg.Text(_('Decrypting'), font=('Sans serif', 12))],
-        [sg.Text("Having received the encrypted .aes file through e-mail or a service (above),")],
-        [sg.Text("the recipient simply clicks the Decrypt button, selects the (.aes) file and")],
-        [sg.Text("enters the passphrase (password) provided separately by the sender.")],
-        [sg.Text("And that's it!")],
+        [sg.Text(_("Having received the encrypted .aes file through e-mail or a service (above),"))],
+        [sg.Text(_("the recipient simply clicks the Decrypt button, selects the (.aes) file and"))],
+        [sg.Text(_("enters the passphrase (password) provided separately by the sender."))],
+        [sg.Text(_("And that's it!"))],
         [sg.Text(' ')],
-        [sg.Text("EASE Crypto relies on pyAesCrypt, password_strength and zxcvbn-python")],
-        [sg.Text("Graphical interface is provided by PySimpleGUIQt, translations use gettext.")],
-        [sg.Text("EASE is not affiliated with any of the file transfer services mentioned, and")],
-        [sg.Text("please submit an issue if any of the services are terminated or changed.")],
+        [sg.Text(_("EASE Crypto relies on pyAesCrypt, password_strength and zxcvbn-python"))],
+        [sg.Text(_("Graphical interface is provided by PySimpleGUIQt, translations use gettext."))],
+        [sg.Text(_("EASE is not affiliated with any of the file transfer services mentioned, and"))],
+        [sg.Text(_("please submit an issue if any of the services are terminated or changed."))],
         [sg.Text(' ')],
-        [sg.Button(_('Homepage'), key='-github-'), sg.Button('OK', key='-about_ok-')]
+        [sg.Button(_('Homepage'), key='-github-'), sg.Button(_('OK'), key='-about_ok-')]
     ]
     
     
@@ -870,6 +888,17 @@ if __name__ == '__main__':
     ease['archive'] = False
     ease['use_tar'] = True
     ease['compression'] = False # default: use store (no compression)
+    
+    
+    # Select GUI language
+    # Available: en, no
+    ease['language'] = 'en'
+    
+    # Activate strings for selected langauge
+    language = gettext.translation('base', localedir='locales', languages=[ease['language']])
+    language.install()
+    _ = language.gettext
+    
     
     # Set "home" dir (our default)
     if Path.home().is_dir():
