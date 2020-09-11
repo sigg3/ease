@@ -9,6 +9,8 @@ EASE will let you:
 * Send files you have encrypted
 * Decrypt files you have received
 
+See [roadmap](https://github.com/sigg3/ease/blob/master/README.md#roadmap) for project progress below.
+
 EASE is specifically made for non-expert users, which means that all options have sane defaults. The user only needs to specify input file(s) and a passphrase, and EASE will handle the rest. Let's bring cryptography to the masses!
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -40,14 +42,15 @@ $ python3 ease.py
 
 ## Roadmap
 - [ ] Object oriented modelling
-- [ ] Automate sending files over selected service
 - [ ] package (.deb) for GNU/Linux
 - [ ] binaries for Microsoft Windows
 - [ ] binaries for Apple OS
-- [x] Visit an online file transport service
-- [x] Encrypt file or group of files
-- [x] Archiving files (with or without compression)
-- [x] Decrypt files
+- [x] implement gettext translation
+- [ ] automated send-file attempt over selected service
+- [x] webbrowser open an online file transport service
+- [x] encrypt file or group of files
+- [x] archiving files (with or without compression)
+- [x] decrypt files (with automatic archive extraction)
 
 
 ## Translations
