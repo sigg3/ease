@@ -1,0 +1,9 @@
+cffi==1.14.2
+cryptography==3.1
+password-strength==0.0.3.post2
+pyAesCrypt==0.4.3
+pycparser==2.20
+PySide2==5.15.1
+PySimpleGUIQt==0.35.0
+shiboken2==5.15.1
+six==1.15.0
