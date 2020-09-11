@@ -50,5 +50,7 @@ Send file(s)
 ## Run test-version
 ```
 git clone https://github.com/sigg3/ease
-pip install < requirements.txt
+cd ease
+pip3 install -r requirements.txt
+python3 ease.py
 ```
