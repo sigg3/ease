@@ -49,8 +49,18 @@ Send file(s)
 
 ## Run test-version (linux)
 ```
-$ git clone https://github.com/sigg3/ease
-$ cd ease
+$ mkdir ease && cd ease
+$
+$ # EITHER clone everything
+$ git clone https://github.com/sigg3/ease .
+$
+$ # OR just get necessary files
+$ wget https://raw.githubusercontent.com/sigg3/ease/master/ease.py
+$ wget https://raw.githubusercontent.com/sigg3/ease/master/requirements.txt
+$
+$ # THEN install deps
 $ pip3 install -r requirements.txt
+$
+$ # FINALLY, just run it
 $ python3 ease.py
 ```
