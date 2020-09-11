@@ -41,7 +41,8 @@ $ python3 ease.py
 ```
 
 ## Roadmap
-- [ ] Object oriented modelling
+- [ ] implement unittest
+- [ ] object oriented modelling
 - [ ] package (.deb) for GNU/Linux
 - [ ] binaries for Microsoft Windows
 - [ ] binaries for Apple OS
