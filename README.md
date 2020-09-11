@@ -4,7 +4,7 @@ Simple utility for symmetric encryption of files or file archives prior to distr
 AES256-CBC encryption provided by pyAesCrypt (cryptography), and passphrase evaluation by password_strength and zxcvbn-python.
 Graphical user interface using PySimpleGUIQt (Qt), with translations provided by gettext.
 
-Binaries and packages not yet available, but .deb, .exe and .dmg are planned. See [install instructions for test-version](https://github.com/sigg3/ease/blob/master/README.md#run-test-version-linux) at the end.
+Binaries and packages not yet available, but are planned. Meanwhile, see [install instructions for test-version](https://github.com/sigg3/ease/blob/master/README.md#run-test-version-linux).
 
 EASE is specifically made for non-expert users, which means that all options have sane defaults. The user only needs to specify input file(s) and a passphrase, and EASE will handle the rest. Let's bring cryptography to the masses!
 
