@@ -10,6 +10,12 @@ EASE is specifically made for non-expert users, which means that all options hav
 
 (Black style not yet implemented, but am working on those lengthy lines..)
 
+## Translations
+
+EASE is currently available in: English, Norwegian.
+
+Find locale .pot files in the locales directory. EASE only uses one domain (base). Please be warned: _String set is incomplete and subject to change._ I will remove this warning when the string set is stable.
+
 
 ## Screenshots
 
