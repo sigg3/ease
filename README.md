@@ -45,3 +45,10 @@ Only input file and passphrase fields require user interaction.
 Send file(s)
 
 ![Send](https://raw.githubusercontent.com/sigg3/ease/master/screenshots/ease_send.png)
+
+
+## Run test-version
+```
+git clone https://github.com/sigg3/ease
+pip install < requirements.txt
+```
