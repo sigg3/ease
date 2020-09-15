@@ -1269,11 +1269,13 @@ if __name__ == '__main__':
                                 sg.popup_error(f"{err_str}: {ease['thread'][1]}", title=err_str)
                                 uinput_cleanup = False
                                 show_decrypt = False
+                                break # should be superfluous ..
                             elif ease['thread'][0] == 2:
                                 err_str = _('Decryption error')
                                 sg.popup_error(f"{err_str}: {ease['thread'][1]}", title=err_str)
                                 uinput_cleanup = False
                                 show_decrypt = False
+                                break # should be superfluous ..
                             
                             
                             # check if it's an archive
@@ -1346,6 +1348,7 @@ if __name__ == '__main__':
                                     )
                                 
                                 show_decrypt = False
+                                break
                             
                             # Remove .aes file if so configured
                             if uinput_cleanup:
@@ -1360,12 +1363,14 @@ if __name__ == '__main__':
                                 title=_('Error')
                                 )
                             show_decrypt = False
+                            break
                     else:
                         err_str = _('Selected input is not recognized as file(s)')
                         sg.popup_error(
                             f"{err_str}: '{uinput_file}'.", title=_('Error')
                             )
                         show_decrypt = False
+                        break
                     
                     # Rest of decrypt stuff goes here
             
