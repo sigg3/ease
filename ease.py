@@ -586,7 +586,8 @@ def archive(file_basename: str, use_tar: bool, use_compression: bool, input_file
                 else:
                     new_archive.write(file_to_archive, compress_type=compression)
                 return_list.append(file_to_archive)
-            except:
+            except Exception as e:
+                print(f"{archivist} could not add {file_to_archive}: {e}") # debug
                 pass
     
     return return_list, archive_filename
