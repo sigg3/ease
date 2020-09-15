@@ -13,6 +13,8 @@ See [roadmap](https://github.com/sigg3/ease/blob/master/README.md#roadmap) for p
 
 EASE is specifically made for non-expert users, which means that all options have sane defaults. The user only needs to specify input file(s) and a passphrase, and EASE will handle the rest. Let's bring cryptography to the masses!
 
+EASE currently runs on GNU/Linux and Microsoft Windows.
+
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 (Black style not yet implemented, but am working on those lengthy lines..)
