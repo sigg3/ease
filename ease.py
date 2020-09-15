@@ -582,10 +582,11 @@ def archive(file_basename: str, use_tar: bool, use_compression: bool, input_file
     with archivist(archive_filename, mode=use_mode) as new_archive:
         for file_to_archive in input_files:
             try:
+                file_arcname = str(Path(file_to_archive).stem)
                 if use_tar:
-                    new_archive.add(file_to_archive, arcname=str(Path(file_to_archive).stem)) # using arcname=stem here did not work..
+                    new_archive.add(file_to_archive, arcname=file_arcname) # using arcname=stem here did not work..
                 else:
-                    new_archive.write(file_to_archive, compress_type=compression)
+                    new_archive.write(file_to_archive, arcname=file_arcname, compress_type=compression)
                 return_list.append(file_to_archive)
             except Exception as e:
                 print(f"{archivist} could not add {file_to_archive}: {e}") # debug
