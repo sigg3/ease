@@ -1271,7 +1271,7 @@ if __name__ == '__main__':
                             
                             # check if it's an archive
                             # if so, we will extract the archive contents into out_directory
-                            if output_file.is_file():
+                            if Path(output_file).is_file():
                                 if uinput_unarchive:
                                     
                                     # Run extraction in the background (threading)
