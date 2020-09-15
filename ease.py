@@ -1069,12 +1069,7 @@ if __name__ == '__main__':
                     if Path.is_dir(Path(uinput_folder)):
                         proceed_with_encryption = False # fallback: expect failure
                         
-                        if Path.is_file(Path(uinput_file)):
-                            # create output name from input file
-                            uinput_basename = f"{uinput_file.replace(' ', '_')}" # extension determined by archive() and pyAesCrypt
-                            uinput_files = [ uinput_file ] # list of 1
-                            # value = {0: '/home/sigg3/python/encyrpt_and_send/Icons8_flat_key.png', 'Browse': None, 'output_preview_str': '/home/sigg3/python/snek', 'Browse0': None, 'compression': True, 'tar': True, 'zip': False, 'uinput_passphrase': 'l'}
-                        elif ";" in uinput_file:
+                        if ";" in uinput_file:
                             # create output name from ISO 8601 date
                             uinput_basename = f"ease_{datetime.datetime.now().isoformat().split(sep='T')[0]}"
                             
@@ -1083,7 +1078,13 @@ if __name__ == '__main__':
                             
                             # turn on tarballing/archiving
                             archive_files = True
-                           
+                            
+                        elif Path.is_file(Path(str(uinput_file))):
+                            # create output name from input file
+                            uinput_basename = f"{uinput_file.replace(' ', '_')}" # extension determined by archive() and pyAesCrypt
+                            uinput_files = [ uinput_file ] # list of 1
+                            # value = {0: '/home/sigg3/python/encyrpt_and_send/Icons8_flat_key.png', 'Browse': None, 'output_preview_str': '/home/sigg3/python/snek', 'Browse0': None, 'compression': True, 'tar': True, 'zip': False, 'uinput_passphrase': 'l'}                           
+                            
                         else:
                             err_str = _('Selected input is not recognized as file(s)')
                             sg.popup_error(f"{err_str}:\n'{uinput_file}'", title=_('Error'))
