@@ -1251,6 +1251,7 @@ if __name__ == '__main__':
                                 if uinput_file.endswith('aes'):
                                     pass
                                 else:
+                                    # This is an ugly hack
                                     output_file = Path(str(output_file + '.out'))
                             
                             # Create unique output name if out file exists
@@ -1271,10 +1272,12 @@ if __name__ == '__main__':
                             elif ease['thread'][0] == 1:
                                 err_str = _('I/O error')
                                 sg.popup_error(f"{err_str}: {ease['thread'][1]}", title=err_str)
+                                uinput_cleanup = False
                                 show_decrypt = False
                             elif ease['thread'][0] == 2:
                                 err_str = _('Decryption error')
                                 sg.popup_error(f"{err_str}: {ease['thread'][1]}", title=err_str)
+                                uinput_cleanup = False
                                 show_decrypt = False
                             
                             
@@ -1299,9 +1302,14 @@ if __name__ == '__main__':
                                     elif ease['thread'][0] == 'error':
                                         err_str = _('Error')
                                         sg.popup_error(f"{err_str}: {ease['thread'][1]}.", title=err_str)
+                                        uinput_cleanup = False
                                         show_decrypt = False # TODO is this correct state to break loop??
                                     else:
-                                        sg.popup_error("Unhandled else in unarchiving shenanigans :( thread not in list or 'error'.")
+                                        sg.popup_error(
+                                            "Weird: Unhandled else in unarchiving."
+                                            title=_('Error')
+                                        )
+                                        uinput_cleanup = False
                                     
                                     extracted_files = ease['thread'][0]
                                     skipped_files = ease['thread'][1]
