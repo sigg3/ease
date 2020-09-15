@@ -561,6 +561,7 @@ def archive(file_basename: str, use_tar: bool, use_compression: bool, input_file
     else:
         archivist = zipfile.ZipFile
         ftype="zip"
+        compression = zipfile.ZIP_STORED
         if use_compression:
             try:
                 import zlib
