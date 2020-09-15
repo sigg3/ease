@@ -63,6 +63,7 @@ _ = gettext.gettext
 # TODO Functional branch
 # If we are going to learn methodology, better do it functionally too.
 
+
 def setup_transmitters() -> dict:
     """
     Returns dict of file transmission alternatives (for sending over WWW).
@@ -1299,9 +1300,9 @@ if __name__ == '__main__':
                                         uinput_cleanup = False
                                         show_decrypt = False # TODO is this correct state to break loop??
                                     else:
+                                        err_str = "Weird unhandled case unarchiving."
                                         sg.popup_error(
-                                            "Weird: Unhandled else in unarchiving."
-                                            title=_('Error')
+                                            err_str, title=_('Error')
                                         )
                                         uinput_cleanup = False
                                     
