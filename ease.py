@@ -30,6 +30,12 @@ import datetime, time, zipfile, tarfile, copy, webbrowser, gettext
 _ = gettext.gettext
 
 
+# BUG
+# if decryption password is WRONG and "remove source" is selected
+# the .aes file will be deleted !! This is a critical bug, because it means
+# user cannot type password incorrectly.
+
+
 # debugging gettext
 #import IPython
 # save_me_beer = gettext.find('base', 'locales', all=True)
