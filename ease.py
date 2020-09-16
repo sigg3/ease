@@ -830,7 +830,10 @@ def create_spinner(show_text: str, show_time: float) -> Type[sg.Window]:
     return sg.Window(f"{show_text} ..", layout=spinner_layout, grab_anywhere=True, keep_on_top=True, finalize=True)
 
 
-def unarchive_worker(archive_filename: str, output_dir: str, out_dict: dict, out_index: str):
+def unarchive_worker(archive_filename: str,
+                     output_dir: str,
+                     out_dict: dict,
+                     out_index: str):
     """
     Helper function to run unarchive() in a separate thread using Thread.
     Will save return values from archive into out_dict <dict> index <index>
@@ -848,7 +851,12 @@ def unarchive_worker(archive_filename: str, output_dir: str, out_dict: dict, out
     out_dict[out_index] = extracted, skipped    
 
 
-def archive_worker(file_basename: str, use_tar: bool, use_compression: bool, input_files: list, out_dict: dict, out_index: str):
+def archive_worker(file_basename: str,
+                   use_tar: bool,
+                   use_compression: bool,
+                   input_files: list,
+                   out_dict: dict,
+                   out_index: str):
     """
     Helper function to run archive() in a separate thread using Thread.
     Will save return values from archive into out_dict <dict> index <index>
@@ -856,7 +864,12 @@ def archive_worker(file_basename: str, use_tar: bool, use_compression: bool, inp
     out_dict[out_index] = archive(file_basename, use_tar, use_compression, input_files)
 
 
-def aescrypt_worker(encrypt: bool, input_f: str, output_f: str, user_passphrase: str, out_dict: dict, out_index: str):
+def aescrypt_worker(encrypt: bool,
+                    input_f: str,
+                    output_f: str,
+                    user_passphrase: str,
+                    out_dict: dict,
+                    out_index: str):
     """
     Helper function to execute encryp/decryption (depending on encrypt bool)
     in a separate thread. Returns status message to out_dict['out_index']
@@ -1287,8 +1300,11 @@ if __name__ == '__main__':
                             uinput_files = [ uinput_file ] # list of 1
                             
                         else:
-                            err_str = _('Selected input is not recognized as file(s)')
-                            sg.popup_error(f"{err_str}:\n'{uinput_file}'", title=_('Error'))
+                            err_str = _('Selected input not recognized as file(s)')
+                            sg.popup_error(
+                                f"{err_str}:\n'{uinput_file}'",
+                                title=_('Error')
+                                )
                             show_encrypt = False
                             break
                         
@@ -1365,8 +1381,10 @@ if __name__ == '__main__':
                                 
                                 # success popup
                                 err_str = _('Successfully encrypted the input file(s)')
+                                err_str += f":\n\n{inputs_str}\n\n"
+                                err_str += f"({Path(actual_output).name}"
                                 sg.popup_ok(
-                                    f"{err_str}:\n\n{inputs_str}\n\n({Path(actual_output).name})",
+                                    err_str,
                                     title=_("Success!")
                                 )
                                 
@@ -1376,13 +1394,22 @@ if __name__ == '__main__':
                                 
                             elif ease['thread'][0] == 1:
                                 err_str = _('I/O error')
-                                sg.popup_error(f"{err_str}: {ease['thread'][1]}", title=err_str)
+                                sg.popup_error(
+                                    f"{err_str}: {ease['thread'][1]}",
+                                    title=err_str
+                                    )
                             elif ease['thread'][0] == 2:
                                 err_str = _('Encryption error')
-                                sg.popup_error(f"{err_str}: {ease['thread'][1]}", title=err_str)
+                                sg.popup_error(
+                                    f"{err_str}: {ease['thread'][1]}",
+                                    title=err_str
+                                    )
                             else:
                                 err_str = _('Unhandled exception')
-                                sg.popup_error(f"{err_str}: ease['thread'] not in 0-2")
+                                sg.popup_error(
+                                    f"{err_str}: ease['thread'] not in 0-2",
+                                    title=err_str
+                                    )
                         
                         
                         # Quit to main either way
@@ -1394,7 +1421,9 @@ if __name__ == '__main__':
                         show_encrypt = False
                 else:
                     # an "else" here is probably input into passphrase box
-                    Encrypt['uinput_ppstrength'].update(get_password_strength(Encrypt_value['uinput_passphrase']))
+                    Encrypt['uinput_ppstrength'].update(
+                        get_password_strength(Encrypt_value['uinput_passphrase'])
+                        )
             
             # End encryption window
             Encrypt.close()
@@ -1418,20 +1447,42 @@ if __name__ == '__main__':
                     show_decrypt = False
                 
                 if Decrypt_event == 'dec_uinput_file':
-                     # Update output folder to match parent dir of files selectes as input (quality of life + 1)
-                    Decrypt['dec_output_preview_str'].update(get_folder_from_infiles(Decrypt_value['dec_uinput_file']))
+                     # Update output folder in GUI to match parent
+                     # dir of files selectes as input (quality of life + 1)
+                    Decrypt['dec_output_preview_str'].update(
+                        get_folder_from_infiles(
+                            Decrypt_value['dec_uinput_file']
+                            )
+                        )
+                    
                 elif Decrypt_event == '-dec_decrypt-': # user clicked "Decrypt" to execut decryption on input
+                    
+                    # the file to decrypt
                     uinput_file = Decrypt_value['dec_uinput_file']
+                    
+                    # the passphrase to be used
                     uinput_passphrase = Decrypt_value['uinput_passphrase']
-                    uinput_unarchive = Decrypt_value['uncompress'] # uncompress if file is compressed (tar, gz or zip)
-                    uinput_cleanup = Decrypt_value['removesrc']    # remove source .aes file after decryption
+                    
+                    # uncompress file after decryption (if an archive)
+                    uinput_unarchive = Decrypt_value['uncompress']
+                    
+                    # remove source .aes file after successful decryption
+                    uinput_cleanup = Decrypt_value['removesrc']
+                    
+                    # target directory for decrypted (and extracted) files
                     uinput_outdir = Decrypt_value['dec_output_preview_str']
                     
                     if Path.is_dir(Path(uinput_outdir)):
                         pass
                     else:
-                        print(f"Weird: uinput_outdir = {uinput_outdir} not a dir..")
-                    
+                        err_str = _('Selected directory not a directory')
+                        sg.popup_error(
+                            f"{err_str}:\n{uinput_outdir}",
+                            title=_('Error')
+                            )
+                        show_decrypt = False
+                        break
+                                            
                     if Path.is_file(Path(uinput_file)):
                         # read first bytes (AES header is a requirement)
                         # cf. https://github.com/marcobellaccini/pyAesCrypt/issues/11
@@ -1462,16 +1513,22 @@ if __name__ == '__main__':
                             
                             # parse return from separate thread
                             if ease['thread'][0] == 0:
-                                pass
+                                pass # success!
                             elif ease['thread'][0] == 1:
                                 err_str = _('I/O error')
-                                sg.popup_error(f"{err_str}: {ease['thread'][1]}", title=err_str)
+                                sg.popup_error(
+                                    f"{err_str}: {ease['thread'][1]}",
+                                    title=err_str
+                                    )
                                 uinput_cleanup = False
                                 show_decrypt = False
                                 break # should be superfluous ..
                             elif ease['thread'][0] == 2:
                                 err_str = _('Decryption error')
-                                sg.popup_error(f"{err_str}: {ease['thread'][1]}", title=err_str)
+                                sg.popup_error(
+                                    f"{err_str}: {ease['thread'][1]}",
+                                    title=err_str
+                                    )
                                 uinput_cleanup = False
                                 show_decrypt = False
                                 break # should be superfluous ..
@@ -1505,39 +1562,49 @@ if __name__ == '__main__':
                                     
                                     extracted_files = ease['thread'][0]
                                     skipped_files = ease['thread'][1]
-                                    number_of_extracted_items = len(extracted_files)
-                                    number_of_archived_items = number_of_extracted_items + len(skipped_files)
+                                    num_extract = len(extracted_files)
+                                    num_archived = num_extract + len(skipped_files)
                                     
                                     
                                     # Determine deletion of temporary "leftover" archive file
-                                    if number_of_archived_items == 0 and number_of_extracted_items == 0:
-                                        # This file was not archived and we must skip deletion of temp archive file (will delete output)
-                                        number_of_archived_items, number_of_extracted_items = 1, 1
+                                    if num_archived == 0 and num_extract == 0:
+                                        # This file was not archived in the
+                                        # first place and so we must skip
+                                        # deletion of temp archive file
+                                        num_archived, num_extract = 1, 1
                                     else:
-                                        # delete temporary archive file "output_file" (end-user wants the extracted contents)
+                                        # delete obsolete temp archive file
+                                        # called "output_file" 
+                                        # (end-user wants extracted contents)
                                         files_to_remove.append(str(output_file))                                        
                                 else:
-                                    number_of_extracted_items, number_of_archived_items = 1, 1
+                                    num_extract, num_archived = 1, 1
                                 
                                 
                                 # Give visual feedback
-                                if number_of_extracted_items == number_of_archived_items:
+                                if num_extract == num_archived:
                                     pop_msg = _('Successfully decrypted input file(s)')
+                                    pop_ex = num_extract
+                                    pop_arc = num_archived
                                     sg.popup_ok(
-                                    f"{pop_msg}: {number_of_extracted_items} / {number_of_archived_items}",
-                                    title=_("Success")
+                                        f"{pop_msg}: {pop_ex} / {pop_arc}",
+                                        title=_("Success")
                                     )
                                     
                                 else:
                                     pop_msg = _('Successfully decrypted input file(s)')
-                                    pop_two = _('Skipped items')
+                                    pop_note = _('Skipped items')
+                                    pop_ex = num_extract
+                                    pop_arc = num_archived
+                                    pop_1 = f"{pop_msg}: {pop_ex} / {pop_arc}"
+                                    pop_2 = f"{pop_note}:\n{skipped_files}"
                                     sg.popup_ok(
-                                    f"{pop_msg}: {number_of_extracted_items} / {number_of_archived_items}\n\n{pop_two}:\n{skipped_files}",
-                                    title='Info'
+                                        f"{pop_1}\n\n{pop_2}",
+                                        title=_('Partial success')
                                     )
                                 
                             else:
-                                err_str = _('Selected input is not recognized as file(s)')
+                                err_str = _('Selected input not recognized as file(s)')
                                 sg.popup_error(
                                     f"{err_str}: {output_file}", title=_('Error')
                                     )
@@ -1561,7 +1628,7 @@ if __name__ == '__main__':
                             show_decrypt = False
                             break
                     else:
-                        err_str = _('Selected input is not recognized as file(s)')
+                        err_str = _('Selected input not recognized as file(s)')
                         sg.popup_error(
                             f"{err_str}: '{uinput_file}'.", title=_('Error')
                             )
@@ -1603,10 +1670,15 @@ if __name__ == '__main__':
                     sitename = Send_value['-send_combo-']
                     
                     # fetch relevant info
-                    site_sentence, site_cap, site_faq, xfer_disabled = get_infostring_from_key(sitename)
-                                        
+                    siteinfo = get_infostring_from_key(sitename)
+                    site_sentence = siteinfo[0]
+                    site_cap = siteinfo[1]
+                    site_faq = siteinfo[2]
+                    xfer_disabled = siteinfo[3]
+                    site_url = ease['sites'][sitename]['site_url']
+                    
                     # update fields in-place
-                    Send['-provider_url-'].update(f"URL: {ease['sites'][sitename]['site_url']}")
+                    Send['-provider_url-'].update(f"URL: {site_url}")
                     Send['-provider_info-'].update(site_sentence)
                     Send['-provider_capinfo-'].update(site_cap)
                     Send['-provider_faq-'].update(site_faq)
@@ -1663,7 +1735,7 @@ if __name__ == '__main__':
                         err_str = _('Error')
                         sg.popup_error(
                                        f"{err_str}: {e}",
-                                       title=_('Error')
+                                       title=err_str
                                        )
                         show_about = False # quit to main
             
