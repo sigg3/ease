@@ -611,7 +611,16 @@ def create_about_window() -> Type[sg.Window]:
         [sg.Text(_("EASE is not affiliated with any of the file transfer services mentioned, and"))],
         [sg.Text(_("please submit an issue if any of the services are terminated or changed."))],
         [sg.Text(' ')],
-        [sg.Button(_('Homepage'), key='-github-'), sg.Button(_('OK'), key='-about_ok-')]
+        [
+        sg.Button(
+            _('Homepage'),
+            key='-github-'
+            ),
+        sg.Button(
+            _('OK'),
+            key='-about_ok-'
+            )
+        ]
     ]
     
     
@@ -675,8 +684,8 @@ def get_infostring_from_key(key: str) -> Tuple[str, str, str, bool]:
 
 def get_folder_from_infiles(input_files: str) -> str:
     """
-    Return string of path object's parent if indeed the input is a valid path
-    Else return safe default from settings.
+    Return string of path object's parent if indeed the input is a valid
+    path else return safe default from settings.
     """
     try:
         if Path.is_file(Path(input_files)):
@@ -692,7 +701,7 @@ def get_folder_from_infiles(input_files: str) -> str:
 def get_unique_middlefix() -> int:
     """
     Returns a "unique" middle name for use in non-unique filenames
-    usage: my_var = f"{my_file.stem}-{get_unique_suffix()}{my_file.suffix}"
+    use: my_var = f"{my_file.stem}-{get_unique_suffix()}{my_file.suffix}"
     Requires that my_file is path object and, of course, datetime.
     """
     return int(datetime.datetime.timestamp(datetime.datetime.now()))
@@ -700,8 +709,8 @@ def get_unique_middlefix() -> int:
 
 def get_password_strength(uinput_passphrase: str) -> str:
     """
-    We are not evaluating password policies, just providing visual feedback
-    Call using get_password_strength(Encrypt_value['uinput_passphrase'])
+    We are not evaluating password policies, just providing feedback
+    Use: get_password_strength(Encrypt_value['uinput_passphrase'])
     """
     # string wrangling
     str_entr = _("Passphrase entropy bits")
@@ -711,11 +720,16 @@ def get_password_strength(uinput_passphrase: str) -> str:
         return f"{str_entr}: 0.0, {str_comp}: 0.00"
 
     stats = PasswordStats(uinput_passphrase)
+    pass_complexity = f"{stats.strength():0.2f}"
+    pass_entropy = f"{stats.entropy_bits:0.1f}"
     
-    return f"{str_entr}: {stats.entropy_bits:0.1f}, {str_comp}: {stats.strength():0.2f}"
+    return f"{str_entr}: {pass_entropy}, {str_comp}: {pass_complexity}"
 
 
-def archive(file_basename: str, use_tar: bool, use_compression: bool, input_files: list) -> Tuple[list, str]:
+def archive(file_basename: str,
+            use_tar: bool,
+            use_compression: bool,
+            input_files: list) -> Tuple[list, str]:
     """
     Write tar or zip file, depending on use_tar bool, containing items in
     input_files list with optional (medium) compression. This function handles
@@ -749,7 +763,7 @@ def archive(file_basename: str, use_tar: bool, use_compression: bool, input_file
             except (ImportError, AttributeError):
                 compression = zipfile.ZIP_STORED
             except Exception as e:
-                print(f"Unhandled exception in archive(): {e}") # debug
+                print(f"Unhandled exception in archive(): {e}")
         use_mode = 'w'
     
     
@@ -764,12 +778,20 @@ def archive(file_basename: str, use_tar: bool, use_compression: bool, input_file
             try:
                 file_arcname = str(Path(file_to_archive).stem)
                 if use_tar:
-                    new_archive.add(file_to_archive, arcname=file_arcname) # using arcname=stem here did not work..
+                    new_archive.add(
+                        file_to_archive,
+                        arcname=file_arcname # arcname=stem here did not work..
+                        )
                 else:
-                    new_archive.write(file_to_archive, arcname=file_arcname, compress_type=compression)
+                    new_archive.write(
+                        file_to_archive,
+                        arcname=file_arcname,
+                        compress_type=compression
+                        )
+                
                 return_list.append(file_to_archive)
             except Exception as e:
-                print(f"{archivist} could not add {file_to_archive}: {e}") # debug
+                print(f"{archivist} could not add {file_to_archive}: {e}")
                 pass
     
     return return_list, archive_filename
@@ -794,12 +816,15 @@ def unarchive(archive_filename: str, output_dir: str) -> Tuple[list, list]:
         is_tar = False
         use_mode = 'r'
     else:
-        raise TypeError(f"Input file {archive_filename} not recognized as tar or zip file.") # TODO
+        raise TypeError(f"Input {archive_filename} not tar or zip.")
         return extracted, skipped
     
     with archivist(archive_filename, use_mode) as input_archive:
         # get content list
-        archive_contents = input_archive.getnames() if is_tar else input_archive.namelist()
+        if is_tar:
+            archive_contents = input_archive.getnames() 
+        else:
+            archive_contents = input_archive.namelist()
 
         # extract 'em
         for archived_item in archive_contents:
@@ -817,17 +842,30 @@ def unarchive(archive_filename: str, output_dir: str) -> Tuple[list, list]:
 def create_spinner(show_text: str, show_time: float) -> Type[sg.Window]:
     """
     Helper function to create (and re-create) "Working..." popup
-    Returns window object. Used once if user do not click X to close.
+    Returns window object. Will be re-created if the user hits X.
     """
     
     # Make strings available to gettext :P
-    be_patient = _('This might take a while.')
-    el_time = _('Elapsed time')
+    patience = _('This might take a while.')
+    elapsed = _('Elapsed time')
     secs = _('seconds')
-    
+        
     # create spinner
-    spinner_layout = [[ sg.T(f"{show_text}.. {be_patient}.\n{el_time}: {show_time} {secs}", key='-spinner_text-') ]]
-    return sg.Window(f"{show_text} ..", layout=spinner_layout, grab_anywhere=True, keep_on_top=True, finalize=True)
+    spinner_layout = [
+        [sg.T(
+              f"{show_text}.. {patience}.\n{elapsed}: {show_time} {secs}",
+              key='-spinner_text-'
+              )
+        ]
+    ]
+    
+    return sg.Window(
+                    f"{show_text} ..",
+                    layout=spinner_layout,
+                    grab_anywhere=True,
+                    keep_on_top=True,
+                    finalize=True
+                    )
 
 
 def unarchive_worker(archive_filename: str,
@@ -1248,7 +1286,6 @@ if __name__ == '__main__':
             Encrypt = create_enc_window()
             while show_encrypt:
                 Encrypt_event, Encrypt_value = Encrypt.read()
-                #print(f"Encrypt_event  = {Encrypt_event}\nEncrypt_value  = {Encrypt_value}")  # debug
                 
                 if Encrypt_event == sg.WIN_CLOSED:
                     show_encrypt = False
@@ -1256,12 +1293,17 @@ if __name__ == '__main__':
                 if Encrypt_event == '-enc_cancel-':
                     show_encrypt = False
                 elif Encrypt_event == 'enc_uinput_files':
-                    # Update output folder to match parent dir of files selectes as input (quality of life + 1)
-                    Encrypt['output_preview_str'].update(get_folder_from_infiles(Encrypt_value['enc_uinput_files']))                    
+                    # Update output folder to match parent dir of
+                    # files selectes as input (quality of life + 1)
+                    Encrypt['output_preview_str'].update(
+                        get_folder_from_infiles(
+                            Encrypt_value['enc_uinput_files']
+                            )
+                    )
                 elif Encrypt_event == '-enc_encrypt-':
                     
                     # Read input
-                    uinput_file = Encrypt_value['enc_uinput_files'] # was Encrypt_value[0], but should use unique keys
+                    uinput_file = Encrypt_value['enc_uinput_files']
                     uinput_folder = Encrypt_value['output_preview_str']
                     uinput_passphrase = Encrypt_value['uinput_passphrase']
                     
@@ -1286,18 +1328,22 @@ if __name__ == '__main__':
                         
                         if ";" in uinput_file:
                             # create output name from ISO 8601 date
-                            uinput_basename = f"ease_{datetime.datetime.now().isoformat().split(sep='T')[0]}"
+                            tstamp = datetime.datetime.now().isoformat()
+                            tstamp, _throwaway = tstamp.split(sep='T')
+                            uinput_basename = f"ease_{tstamp}"
                             
                             # populate input_files list for archiving
-                            uinput_files = uinput_file.split(sep=";") # list of files that we need to tarball/zip
+                            # list of files that we need to tarball/zip
+                            uinput_files = uinput_file.split(sep=";")
                             
                             # turn on tarballing/archiving
                             archive_files = True
                             
                         elif Path.is_file(Path(str(uinput_file))):
                             # create output name from input file
-                            uinput_basename = f"{uinput_file.replace(' ', '_')}" # extension determined by archive() and pyAesCrypt
-                            uinput_files = [ uinput_file ] # list of 1
+                            # extension determined by archive() and pyAesCrypt
+                            uinput_basename = f"{uinput_file.replace(' ', '_')}"
+                            uinput_files = [ uinput_file ]
                             
                         else:
                             err_str = _('Selected input not recognized as file(s)')
@@ -1313,12 +1359,18 @@ if __name__ == '__main__':
                         # Note: EASE is not designed to enforce password policies.
                         if len(uinput_passphrase) < 6:
                             err_str = _('Error: password too short')
-                            sg.popup_error(err_str, title=_('Error'))
+                            sg.popup_error(
+                                err_str,
+                                title=_('Error')
+                                )
                             show_encrypt = False
                             break
                         elif len(uinput_passphrase) > 1024:
                             err_str = _('Error: password too long')
-                            sg.popup_error(err_str, title=_('Error'))
+                            sg.popup_error(
+                                err_str,
+                                title=_('Error')
+                                )
                             show_encrypt = False
                             break
                         
@@ -1326,15 +1378,23 @@ if __name__ == '__main__':
                         if archive_files:
                             number_of_inputs = len(uinput_files)
                             
+
+                            # archive parameters
+                            target_location = Path(uinput_folder)
+                            archive_target_location = Path(uinput_folder) / Path(uinput_basename).stem
+                            
                             # Run archiving in the background (threading)
                             # while showing a "Working ..." pop-up
                             # Output saved in ease['thread']
-                            
-                            target_location = Path(uinput_folder)
-                            archive_target_location = Path(uinput_folder) / Path(uinput_basename).stem
-                            run_in_the_background('archive', [str(archive_target_location), use_tar, use_compression, uinput_files])
-                            
-                            #print(f"got actual_output candidate as {ease['thread'][1]}")
+                            run_in_the_background(
+                                'archive',
+                                [
+                                    str(archive_target_location),
+                                    use_tar,
+                                    use_compression,
+                                    uinput_files
+                                ]
+                            )
                             
                             # save outputs here (ease['thread'] is re-usable)
                             archive_outputs = ease['thread'] # Note: tuple type
@@ -1342,11 +1402,22 @@ if __name__ == '__main__':
                             if number_of_archived_items != number_of_inputs:
                                 err_str = _('Could not archive any files')
                                 err_tit = _('Archiving error')
-                                sg.popup_error(f"{err_str}: {number_of_archived_items} / {number_of_inputs}. {_('Aborting')}!", title=err_tit)
+                                err_arc = number_of_archived_items
+                                err_ins = number_of_inputs
+                                err_abort = _('Aborting')
+                                err_msg = f"{err_str}: {err_arc} / {err_ins}"
+                                sg.popup_error(
+                                    f"{err_msg}. {err_abort}!",
+                                    title=err_tit
+                                    )
+                                    
                             elif number_of_archived_items == 0:
-                                err_str = _('Could not archive all selected files')
+                                err_str = _('Could not archive all the files')
                                 err_tit = _('Archiving error')
-                                sg.popup_error(err_str, title=err_tit)
+                                sg.popup_error(
+                                    err_str,
+                                    title=err_tit
+                                    )
                             else:
                                 actual_input = archive_outputs[1]
                                 proceed_with_encryption = True
@@ -1370,7 +1441,15 @@ if __name__ == '__main__':
                             # Run aescrypt_worker in a separate thread
                             # while displaying a "working..." animated pop-up
                             # and report back to ease['thread'] var.
-                            run_in_the_background('encrypt', [ True, actual_input, actual_output, uinput_passphrase ])
+                            run_in_the_background(
+                                'encrypt',
+                                [
+                                    True,
+                                    actual_input,
+                                    actual_output,
+                                    uinput_passphrase
+                                ]
+                            )
                             
                             # parse return from separate thread
                             if ease['thread'][0] == 0: # success
@@ -1439,7 +1518,7 @@ if __name__ == '__main__':
             # Do decryption loop
             while show_decrypt:
                 Decrypt_event, Decrypt_value = Decrypt.read()
-               # print(f"Decrypt_event  = {Decrypt_event}\nDecrypt_value  = {Decrypt_value}")  # debug
+
                 if Decrypt_event == sg.WIN_CLOSED:
                     show_decrypt = False
                 
@@ -1455,7 +1534,8 @@ if __name__ == '__main__':
                             )
                         )
                     
-                elif Decrypt_event == '-dec_decrypt-': # user clicked "Decrypt" to execut decryption on input
+                elif Decrypt_event == '-dec_decrypt-':
+                    # user clicked "Decrypt" to execut decryption on input
                     
                     # the file to decrypt
                     uinput_file = Decrypt_value['dec_uinput_file']
@@ -1509,7 +1589,15 @@ if __name__ == '__main__':
                             # Run aescrypt_worker in a separate thread
                             # while displaying a "working..." animated pop-up
                             # and report back to ease['thread'] var.
-                            run_in_the_background('decrypt', [ False, uinput_file, str(output_file), uinput_passphrase ])
+                            run_in_the_background(
+                                'decrypt',
+                                [
+                                    False,
+                                    uinput_file,
+                                    str(output_file),
+                                    uinput_passphrase 
+                                ]
+                            )
                             
                             # parse return from separate thread
                             if ease['thread'][0] == 0:
@@ -1542,7 +1630,13 @@ if __name__ == '__main__':
                                     # Run extraction in the background (threading)
                                     # while showing a "Working ..." pop-up
                                     # Output saved in ease['thread']
-                                    run_in_the_background('unarchive', [str(output_file), uinput_outdir])
+                                    run_in_the_background(
+                                        'unarchive',
+                                        [
+                                            str(output_file),
+                                            uinput_outdir
+                                        ]
+                                    )
                                     
                                     # parse returns from background thread
                                     if type(ease['thread'][0]) is list:
