@@ -694,8 +694,8 @@ def get_infostring_from_key(key: str) -> Tuple[str, str, str, bool]:
 
 def get_folder_from_infiles(input_files: str) -> str:
     """
-    Return string of path object's parent if indeed the input is a valid
-    path else return safe default from settings.
+    Return string of path object's parent if indeed the input is a
+    valid path else return safe default from settings.
     """
     try:
         if Path.is_file(Path(input_files)):
@@ -719,7 +719,7 @@ def get_unique_middlefix() -> int:
 
 def get_password_strength(uinput_passphrase: str) -> str:
     """
-    We are not evaluating password policies, just providing feedback
+    We're not evaluating password policies, just providing feedback
     Use: get_password_strength(Encrypt_value['uinput_passphrase'])
     """
     # string wrangling
@@ -965,20 +965,20 @@ def run_in_the_background(worker_to_run: str, worker_args: list):
     N return value because the thread saves to global ease['thread'].
     """
     
+    # set thread parameters
+    # dict[index] sent to background task in order to save output
     output_dict = ease
     output_index = 'thread'
-    daemonize = True
-    number_of_args = 4 # + output_dict, output_index     
+    daemonize_setting = True
     
     if worker_to_run == 'archive':
-        worker_func = archive_worker
+        worker_function = archive_worker
         show_text = _('Archiving')        
     elif worker_to_run == 'unarchive':
-        worker_func = unarchive_worker
+        worker_function = unarchive_worker
         show_text = _('Extracting')
-        number_of_args = 2 # only has 2 args + output_dict and output_index
     else:
-        worker_func = aescrypt_worker
+        worker_function = aescrypt_worker
         if worker_to_run == 'encrypt':
             show_text = _('Encrypting')
         else:
@@ -988,30 +988,14 @@ def run_in_the_background(worker_to_run: str, worker_args: list):
     # (re)set ease dict key 'thread' to store output values from thread
     ease['thread'] = None
     
-    # Create helper thread for executing archiving (might be big file)
-    if number_of_args == 4:
-        input_arguments = (
-                            worker_args[0],
-                            worker_args[1],
-                            worker_args[2],
-                            worker_args[3],
-                            output_dict,
-                            output_index
-                          )
-        
-    elif number_of_args == 2:
-        input_arguments = (
-                            worker_args[0],
-                            worker_args[1],
-                            output_dict,
-                            output_index
-                          )
-
+    # Create arguments for worker
+    input_arguments = tuple(worker_args + [output_dict, output_index])
+    
     # Create threading.Thread object
     worker = Thread(
-                     target=worker_func,
+                     target=worker_function,
                      args=input_arguments,
-                     daemon=daemonize
+                     daemon=daemonize_setting
                     )
     
     # Create popup_window working dot dot dot...
