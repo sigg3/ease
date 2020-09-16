@@ -86,59 +86,69 @@ def setup_transmitters() -> dict:
     """
     
     # setup return
-    list_of_sites = {}
+    sites = {}
     
     # sendgb.com (added 2020-09-07)
-    sitename = 'sendgb.com'
-    list_of_sites[sitename] = {}
-    list_of_sites[sitename]['changed'] = '2020-09-07'
-    list_of_sites[sitename]['site_url'] = f'https://www.{sitename}'
-    list_of_sites[sitename]['days_expire'] = 7
-    list_of_sites[sitename]['max_size_gb'] = '5 GB'
-    list_of_sites[sitename]['require_login'] = False
-    list_of_sites[sitename]['automated'] = False
-    list_of_sites[sitename]['limitations'] = _("files stored for 90 days.")
-    list_of_sites[sitename]['faq'] = 'https://www.sendgb.com/en/faq.html'
+    name = 'sendgb.com'
+    sites[name] = {}
+    sites[name]["changed"] = "2020-09-07"
+    sites[name]["site_url"] = f"https://www.{name}"
+    sites[name]["days_expire"] = "7"
+    sites[name]["max_size_gb"] = "5 GB"
+    sites[name]["require_login"] = False
+    sites[name]["automated"] = False
+    sites[name]["limitations"] = _("files stored for 90 days.")
+    sites[name]["faq"] = "https://www.sendgb.com/en/faq.html"
     
     # sendgb.com (added 2020-09-07)
-    sitename = 'fromsmash.com'
-    list_of_sites[sitename] = {}
-    list_of_sites[sitename]['changed'] = '2020-09-07'
-    list_of_sites[sitename]['site_url'] = f'https://{sitename}'
-    list_of_sites[sitename]['days_expire'] = 14
-    list_of_sites[sitename]['max_size_gb'] = _('None')
-    list_of_sites[sitename]['require_login'] = False
-    list_of_sites[sitename]['automated'] = False
-    list_of_sites[sitename]['limitations'] = _("files 0-2 GB in size must queue.")
-    list_of_sites[sitename]['faq'] = 'https://faq.fromsmash.com/'
+    name = 'fromsmash.com'
+    sites[name] = {}
+    sites[name]["changed"] = "2020-09-07"
+    sites[name]["site_url"] = f"https://{name}"
+    sites[name]["days_expire"] = "14"
+    sites[name]["max_size_gb"] = _('None')
+    sites[name]["require_login"] = False
+    sites[name]["automated"] = False
+    sites[name]["limitations"] = _("files 0-2 GB in size must queue.")
+    sites[name]["faq"] = "https://faq.fromsmash.com/"
     
     # sendgb.com (added 2020-09-07)
-    sitename = 'surgesend.com'
-    list_of_sites[sitename] = {}
-    list_of_sites[sitename]['changed'] = '2020-09-07'
-    list_of_sites[sitename]['site_url'] = f'https://{sitename}'
-    list_of_sites[sitename]['days_expire'] = 7
-    list_of_sites[sitename]['max_size_gb'] = '3 GB'
-    list_of_sites[sitename]['require_login'] = False
-    list_of_sites[sitename]['automated'] = False
-    list_of_sites[sitename]['limitations'] = _("store up to 5GB per month")
-    list_of_sites[sitename]['faq'] = "https://surgesend.com/help"
+    name = 'surgesend.com'
+    sites[name] = {}
+    sites[name]["changed"] = "2020-09-07"
+    sites[name]["site_url"] = f"https://{name}"
+    sites[name]["days_expire"] = "7"
+    sites[name]["max_size_gb"] = "3 GB"
+    sites[name]["require_login"] = False
+    sites[name]["automated"] = False
+    sites[name]["limitations"] = _("store up to 5GB per month")
+    sites[name]["faq"] = "https://surgesend.com/help"
     
     # dropbox (added 2020-09-08)
-    sitename = 'dropbox.com'
-    list_of_sites[sitename] = {}
-    list_of_sites[sitename]['changed'] = '2020-09-08'
-    list_of_sites[sitename]['site_url'] = f'https://{sitename}'
-    list_of_sites[sitename]['days_expire'] = 'N/A'
-    list_of_sites[sitename]['max_size_gb'] = '2 GB'
-    list_of_sites[sitename]['require_login'] = True
-    list_of_sites[sitename]['automated'] = False
-    list_of_sites[sitename]['limitations'] = _("free account gives 2GB storage total")
-    list_of_sites[sitename]['faq'] = "https://www.dropbox.com/basic"
+    name = 'dropbox.com'
+    sites[name] = {}
+    sites[name]["changed"] = "2020-09-08"
+    sites[name]["site_url"] = f"https://{name}"
+    sites[name]["days_expire"] = "N/A"
+    sites[name]["max_size_gb"] = "2 GB"
+    sites[name]["require_login"] = True
+    sites[name]["automated"] = False
+    sites[name]["limitations"] = _("free account gives 2GB storage total")
+    sites[name]["faq"] = "https://www.dropbox.com/basic"
     
+    # add-more-here (date added)
+    # name = 'tld.tld'
+    # sites[name]["changed"] = "date added"
+    # sites[name]["site_url"] = f"https://{name}"
+    # sites[name]["days_expire"] = "N/A"
+    # sites[name]["max_size_gb"] = "X GB"
+    # sites[name]["require_login"] = True
+    # sites[name]["automated"] = False
+    # sites[name]["limitations"] = _("small note on limitations")
+    # sites[name]["faq"] = "<url to faq>"
     
     # return any hits
-    return list_of_sites
+    return sites
 
 
 def create_main_window() -> Type[sg.Window]:
@@ -172,11 +182,13 @@ def create_main_window() -> Type[sg.Window]:
                 [sg.Text(f"{ease['title']}", font=('Sans serif', 16))],
                 [sg.Text(' ')],
                 [sg.Text(
-                    _("Encrypt a file or files securely so it's safe to distribute, or decrypt files you have received.")
+                    _("Encrypt a file or files securely so it's safe \
+to distribute, or decrypt files you have received.")
                     )
                 ],
                 [sg.Text(
-                    _("This utility uses AES256-CBC (pyAesCrypt) to encrypt/decrypt files in the AES Crypt file format v.2.")
+                    _("This utility uses AES256-CBC (pyAesCrypt) to \
+encrypt/decrypt files in the AES Crypt file format v.2.")
                     )
                 ],
                 [sg.Text(' ')],
@@ -225,11 +237,11 @@ def create_main_window() -> Type[sg.Window]:
 def create_enc_window() -> Type[sg.Window]:
     """
     Helper function to create (and re-create) encryption window
-    Return window object to allow for assignment to "global" Window variable
+    Return window object to allow for assignment
     """
     
     # Set tables
-    enc_opts = [
+    encrypt_options = [
         [
         sg.CBox(
             _('Enable compression (smaller file size)'),
@@ -238,38 +250,85 @@ def create_enc_window() -> Type[sg.Window]:
             )
         ],
         [
-        sg.Radio('tarball', 'archive_radio', key='tar'),
-        sg.Radio('zip', 'archive_radio', key='zip')
+        sg.Radio(
+            'tarball',
+            'archive_radio',
+            key='tar'
+            ),
+        sg.Radio(
+            'zip',
+            'archive_radio',
+            key='zip'
+            )
         ]
     ]
     
-    enc_in = [
+    encrypt_input = [
         [
-        sg.InputText(key='enc_uinput_files', enable_events=True),
-        sg.FilesBrowse(target='enc_uinput_files')
+        sg.InputText(
+            key='enc_uinput_files',
+            enable_events=True
+            ),
+        sg.FilesBrowse(
+            target='enc_uinput_files'
+            )
         ]
     ]
     
-    enc_out = [
+    encrypt_output = [
         [
-        sg.InputText(ease['output_dir'], disabled=True, key='output_preview_str'),
-        sg.FolderBrowse(target='output_preview_str')
+        sg.InputText(
+            ease['output_dir'],
+            disabled=True,
+            key='output_preview_str'
+            ),
+        sg.FolderBrowse(
+            target='output_preview_str'
+            )
         ]
     ]
         
     # Set layout
     EncryptLayout = [
-        [sg.Text(f"{ease['title']}", font=('Sans serif', 16))],
+        [sg.Text(
+            f"{ease['title']}", font=('Sans serif', 16)
+            )
+        ],
         [sg.Text(' ')],
-        [sg.Text(_("Securely encrypt file(s), so it is safe to distribute over untrusted service (like e-mail)."))],
-        [sg.Text(_("If you select more than one file, they will be gathered in an encrypted archive."))],
-        [sg.Text(_("If your recipient uses Windows, consider using zip instead of tar."))],
+        [sg.Text(
+            _("Securely encrypt file(s), so it is safe to distribute \
+over untrusted service (like e-mail).")
+            )
+        ],
+        [sg.Text(
+            _("If you select more than one file, they will be gathered \
+in an encrypted archive.")
+            )
+        ],
+        [sg.Text(
+            _("If your recipient uses Windows, consider using zip \
+instead of tar.")
+            )
+        ],
         [sg.T(' ')],
-        [sg.Frame(layout=enc_in, title=_("Select input file(s):"))],
-        [sg.Frame(layout=enc_out, title=_("Specify where to save the output"))],
-        [sg.Frame(layout=enc_opts, title=_('Archiving options (for groups of files)'))],
+        [sg.Frame(
+            layout=encrypt_input,
+            title=_("Select input file(s):")
+            )
+        ],
+        [sg.Frame(
+            layout=encrypt_output,
+            title=_("Specify where to save the output")
+            )
+        ],
+        [sg.Frame(
+            layout=encrypt_options,
+            title=_('Archiving options (for groups of files)')
+            )
+        ],
         [sg.Frame(layout=[
-            [sg.T(_("It is recommended to use a full sentence as the passphrase."))],
+            [sg.T(_("It is recommended to use a full sentence as \
+the passphrase."))],
             [sg.In('', key='uinput_passphrase')],
             [sg.T(get_password_strength(''), key='uinput_ppstrength')]
             ],
@@ -297,18 +356,18 @@ def create_enc_window() -> Type[sg.Window]:
 def create_dec_window() -> Type[sg.Window]:
     """
     Helper function to create (and re-create) decryption window
-    Return window object to allow for assignment to "global" Window variable
+    Return window object to allow for assignment
     """
     
     # Set tables
-    dec_in = [
+    decrypt_input = [
         [
         sg.InputText(key='dec_uinput_file', enable_events=True),
         sg.FileBrowse(target='dec_uinput_file')
         ]
     ]
     
-    dec_opts = [
+    decrypt_options = [
         [sg.CBox(
             _('Automatically decompress decrypted archives'),
             default=True,
@@ -323,7 +382,7 @@ def create_dec_window() -> Type[sg.Window]:
         ]
     ]
     
-    dec_out = [
+    decrypt_output = [
         [
         sg.InputText(
             ease['output_dir'],
@@ -336,7 +395,7 @@ def create_dec_window() -> Type[sg.Window]:
         ]
     ]
     
-    dec_pass = [
+    decrypt_passphrase = [
         [sg.In(
             '',
             key='uinput_passphrase'
@@ -347,15 +406,42 @@ def create_dec_window() -> Type[sg.Window]:
     
     # Set layout
     DecryptLayout = [
-        [sg.Text(f"{ease['title']}", font=('Sans serif', 16))],
+        [sg.Text(
+            f"{ease['title']}",
+            font=('Sans serif', 16)
+            )
+        ],
         [sg.Text(' ')],
-        [sg.Text(_("Decrypt any encrypted .aes file you have received."))],
-        [sg.Text(_("If the decrypted file is a tarball or zip archive, it will be extracted."))],
+        [sg.Text(
+            _("Decrypt any encrypted .aes file you have received.")
+            )
+        ],
+        [sg.Text(
+            _("If the decrypted file is a tarball or zip archive, \
+it will be extracted.")
+            )
+        ],
         [sg.T(' ')],
-        [sg.Frame(layout=dec_in, title=_("Select input file(s)"))],
-        [sg.Frame(layout=dec_opts, title=_('Decryption options'))],
-        [sg.Frame(layout=dec_out, title=_("Specify where to save the output"))],
-        [sg.Frame(layout=dec_pass, title=_("Passphrase"))],
+        [sg.Frame(
+            layout=decrypt_input,
+            title=_("Select input file(s)")
+            )
+        ],
+        [sg.Frame(
+            layout=decrypt_options,
+            title=_('Decryption options')
+            )
+        ],
+        [sg.Frame(
+            layout=decrypt_output,
+            title=_("Specify where to save the output")
+            )
+        ],
+        [sg.Frame(
+            layout=decrypt_passphrase,
+            title=_("Passphrase")
+            )
+        ],
         [
         sg.Button(_('Decrypt'), key='-dec_decrypt-'),
         sg.Cancel(_("Cancel"), key='-dec_cancel-')
@@ -375,7 +461,7 @@ def create_dec_window() -> Type[sg.Window]:
 def create_send_window() -> Type[sg.Window]:
     """
     Helper function to create (and re-create) file send window.
-    Return window object to allow assignment to "global" Window variable.
+    Return window object to allow assignment 
     """
     
     # Fetch latest transmitter info
@@ -383,27 +469,64 @@ def create_send_window() -> Type[sg.Window]:
     
     # Set first item as default
     for sitename in sites.keys():
-        site_sentence, site_cap, site_faq, xfer_disabled = get_infostring_from_key(sitename)
+        siteinfo = get_infostring_from_key(sitename)
         break # we just need the first one for creation
+    
+    site_sentence = siteinfo[0]
+    site_cap = siteinfo[1]
+    site_faq = siteinfo[2]
+    xfer_disabled = siteinfo[3]
+
     
     # File xfer site info table
     xfer_site = [
-        [sg.T(f"URL: {sites[sitename]['site_url']}", key='-provider_url-')],
-        [sg.T(site_faq, key='-provider_faq-')],
-        [sg.T(site_sentence, key='-provider_info-')],
-        [sg.T(site_cap, key='-provider_capinfo-')]
+        [sg.T(
+            f"URL: {sites[sitename]['site_url']}",
+            key='-provider_url-'
+            )
+        ],
+        [sg.T(
+            site_faq,
+            key='-provider_faq-'
+            )
+        ],
+        [sg.T(
+            site_sentence,
+            key='-provider_info-'
+            )
+        ],
+        [sg.T(
+            site_cap,
+            key='-provider_capinfo-'
+            )
+        ]
     ]
     
     # Window layout
     SendfileLayout = [
-        [sg.Text(f"{ease['title']}", font=('Sans serif', 16))],
+        [sg.Text(
+            f"{ease['title']}",
+            font=('Sans serif', 16)
+            )
+        ],
         [sg.Text(' ')],
-        [sg.Text(_("Sometimes files are too big for attaching to e-mails."))],
-        [sg.Text(_("Most of these online file transfer services do not require a login."))],
-        [sg.Text(_("Select any provider to visit their website or attempt sending."))],
+        [sg.Text(
+            _("Sometimes files are too big for attaching to e-mails.")
+            )
+        ],
+        [sg.Text(
+            _("Most of these online file transfer services do not require a login.")
+            )
+        ],
+        [sg.Text(
+            _("Select any provider to visit their website or attempt sending.")
+            )
+        ],
         [sg.Text(' ')],
         [
-            sg.Text(_('Choose file transfer service: ')),
+            sg.Text(
+                _('Choose file transfer service: ')
+            ),
             sg.Combo(
                  list(sites.keys()),
                  default_value=sitename,
@@ -411,12 +534,26 @@ def create_send_window() -> Type[sg.Window]:
                  readonly=True,
                  enable_events=True)
         ],
-        [sg.Frame(layout=xfer_site, title=' ')], # title is workaround
+        [sg.Frame(
+            layout=xfer_site,
+            title=' ' # title is workaround
+            )
+        ],
         [sg.Text(' ')],
         [
-        sg.Button(_('Send'), key='-send_send-', disabled=xfer_disabled),
-        sg.Button(_('Open URL'), key='-visit_url-'),
-        sg.Button(_("Cancel"), key='-send_cancel-')
+        sg.Button(
+            _('Send'),
+            key='-send_send-',
+            disabled=xfer_disabled
+            ),
+        sg.Button(
+            _('Open URL'),
+            key='-visit_url-'
+            ),
+        sg.Button(
+            _("Cancel"),
+            key='-send_cancel-'
+            )
         ]
     ]
     
@@ -434,7 +571,7 @@ def create_send_window() -> Type[sg.Window]:
 def create_about_window() -> Type[sg.Window]:
     """
     Helper function to create (and re-create) an about window.
-    Returns a window object to allow assignment to var in global scope.
+    Returns a window object to allow assignment
     """
     
     contrib = _('Submit issues and new translations at')
@@ -492,14 +629,16 @@ def create_about_window() -> Type[sg.Window]:
 
 def get_infostring_from_key(key: str) -> Tuple[str, str, str, bool]:
     """
-    Simple way to build string from sites[] dict in setup_transmitters()
+    Build string from sites[] dict in setup_transmitters()
     Returns a tuple: f-string of general site info, and a bool
     """
     
+    # fetch data
     sites = ease['sites']
 
     # automated "send" action button disabled/enabled status
-    xfer_disabled = False if sites[key]['automated'] else True
+    # bool value opposite of bool in sites[key]["automated"]
+    xfer_disabled = False if sites[key]["automated"] else True
     
     # build site info string
     site_sentence = _('Max file size')
@@ -698,17 +837,15 @@ def unarchive_worker(archive_filename: str, output_dir: str, out_dict: dict, out
     """
     
     try:
-        extracted_files, skipped_files = unarchive(archive_filename, output_dir)
+        extracted, skipped = unarchive(archive_filename, output_dir)
     except TypeError:
-        # not an error, we will not unarchive it
-        number_of_extracted_items, number_of_archived_items = [], []
+        # not an error, input not an archive. we will not unarchive it
+        # use might have sent a file with .tar extension that is not tar ..
+        extracted, skipped = [], []
     except Exception as e:
-        number_of_extracted_items = 'error'
-        number_of_archived_items = e
+        extracted, skipped  = 'error', e # export error str to thread dict
     
-    out_dict[out_index] = extracted_files, skipped_files    
-    
-    
+    out_dict[out_index] = extracted, skipped    
 
 
 def archive_worker(file_basename: str, use_tar: bool, use_compression: bool, input_files: list, out_dict: dict, out_index: str):
@@ -1358,11 +1495,12 @@ if __name__ == '__main__':
                                         sg.popup_error(f"{err_str}: {ease['thread'][1]}.", title=err_str)
                                         uinput_cleanup = False
                                         show_decrypt = False # TODO is this correct state to break loop??
+                                        break
                                     else:
                                         err_str = "Weird unhandled case unarchiving."
                                         sg.popup_error(
                                             err_str, title=_('Error')
-                                        )
+                                            )
                                         uinput_cleanup = False
                                     
                                     extracted_files = ease['thread'][0]
