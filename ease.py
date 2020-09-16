@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # coding=utf-8
-# EASE: Encrypt and Send with EaSE
+# EASE: Encrypt and Send with EASE
 # Simple utility for symmetric encryption of files or file archives
 # prior to distribution over untrusted services (like e-mail).
 #
 # Copyright (C) 2020 Sigbjørn "sigg3" Smelror <git@sigg3.net>.
 #
-# EaSE is free software: you can redistribute it and/or modify it
+# EASE is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
 # the Free Software Foundation, version 3 of the License.
 #
@@ -24,7 +24,13 @@ from pathlib import Path
 from password_strength import PasswordStats
 from typing import Tuple, Type
 from threading import Thread
-import datetime, time, zipfile, tarfile, copy, webbrowser, gettext
+import datetime
+import time
+import zipfile
+import tarfile
+import copy
+import webbrowser
+import gettext
 
 # Enable translations
 _ = gettext.gettext
@@ -153,6 +159,10 @@ def create_main_window() -> Type[sg.Window]:
     caption_decrypt = _('Decrypt')
     caption_send = _('Send')
     caption_about = _('About')
+    
+    
+    # Justify icons using stringName.center(width,fillChar)
+    # TODO
     caption_send    = f" {caption_send}"   # space added for English
     caption_about   = f" {caption_about}"  # Qt justification :( # TODO
     
@@ -161,8 +171,14 @@ def create_main_window() -> Type[sg.Window]:
     WelcomeLayout = [
                 [sg.Text(f"{ease['title']}", font=('Sans serif', 16))],
                 [sg.Text(' ')],
-                [sg.Text(_("Encrypt a file or files securely so it's safe to distribute, or decrypt files you have received."))],
-                [sg.Text(_("This utility uses AES256-CBC (pyAesCrypt) to encrypt/decrypt files in the AES Crypt file format v.2."))],
+                [sg.Text(
+                    _("Encrypt a file or files securely so it's safe to distribute, or decrypt files you have received.")
+                    )
+                ],
+                [sg.Text(
+                    _("This utility uses AES256-CBC (pyAesCrypt) to encrypt/decrypt files in the AES Crypt file format v.2.")
+                    )
+                ],
                 [sg.Text(' ')],
                 [sg.Button(
                     caption_encrypt,
@@ -215,7 +231,11 @@ def create_enc_window() -> Type[sg.Window]:
     # Set tables
     enc_opts = [
         [
-        sg.CBox(_('Enable compression (smaller file size)'), default=False, key='compression')
+        sg.CBox(
+            _('Enable compression (smaller file size)'),
+            default=False,
+            key='compression'
+            )
         ],
         [
         sg.Radio('tarball', 'archive_radio', key='tar'),
@@ -289,19 +309,39 @@ def create_dec_window() -> Type[sg.Window]:
     ]
     
     dec_opts = [
-        [sg.CBox(_('Automatically decompress decrypted archives'), default=True, key='uncompress')],
-        [sg.CBox(_('Remove source .aes file after decryption'), default=False, key='removesrc')]
+        [sg.CBox(
+            _('Automatically decompress decrypted archives'),
+            default=True,
+            key='uncompress'
+            )
+        ],
+        [sg.CBox(
+            _('Remove source .aes file after decryption'),
+            default=False,
+            key='removesrc'
+            )
+        ]
     ]
     
     dec_out = [
         [
-        sg.InputText(ease['output_dir'], disabled=True, key='dec_output_preview_str'),
-        sg.FolderBrowse(target='dec_output_preview_str')
+        sg.InputText(
+            ease['output_dir'],
+            disabled=True,
+            key='dec_output_preview_str'
+            ),
+        sg.FolderBrowse(
+            target='dec_output_preview_str'
+            )
         ]
     ]
     
     dec_pass = [
-        [sg.In('', key='uinput_passphrase')]
+        [sg.In(
+            '',
+            key='uinput_passphrase'
+            )
+        ]
     ]
     
     
@@ -731,28 +771,43 @@ def run_in_the_background(worker_to_run: str, worker_args: list):
         number_of_args = 2 # only has 2 args + output_dict and output_index
     else:
         worker_func = aescrypt_worker
-        show_text = _('Encrypting') if worker_to_run == 'encrypt' else _('Decrypting')
+        if worker_to_run == 'encrypt':
+            show_text = _('Encrypting')
+        else:
+            show_text = _('Decrypting')
     
     
-    # (re)set ease dict index 'thread' to store output values from separate thread
+    # (re)set ease dict key 'thread' to store output values from thread
     ease['thread'] = None
     
     # Create helper thread for executing archiving (might be big file)
     if number_of_args == 4:
-        input_arguments = (worker_args[0], worker_args[1], worker_args[2], worker_args[3], output_dict, output_index)
-       #  worker = Thread(target=archive_worker, args=(uinput_basename, use_tar, use_compression, uinput_files, ease, 'thread'), daemon=True)
+        input_arguments = (
+                            worker_args[0],
+                            worker_args[1],
+                            worker_args[2],
+                            worker_args[3],
+                            output_dict,
+                            output_index
+                          )
+        
     elif number_of_args == 2:
-        input_arguments = (worker_args[0], worker_args[1], output_dict, output_index)
-#        worker = Thread(target=worker_func, args=(worker_args[0], worker_args[1], output_dict, output_index), daemon=daemonize)
-    
-    # Debugging info
-    #print(f"Executing thread target={worker_func}") # with args={input_arguments}")
-    
+        input_arguments = (
+                            worker_args[0],
+                            worker_args[1],
+                            output_dict,
+                            output_index
+                          )
+
     # Create threading.Thread object
-    worker = Thread(target=worker_func, args=input_arguments, daemon=daemonize)
+    worker = Thread(
+                     target=worker_func,
+                     args=input_arguments,
+                     daemon=daemonize
+                    )
     
     # Create popup_window working dot dot dot...
-    spinner = create_spinner(show_text, 0.2) # 0.2 headstart
+    spinner = create_spinner(show_text, 0.2) # 0.2 sec headstart
     
     # Start worker
     worker.start()
@@ -776,12 +831,14 @@ def run_in_the_background(worker_to_run: str, worker_args: list):
         
         if spinner_e == '__TIMEOUT__':
             # Make strings available to gettext :P
-            be_patient = _('This might take a while.')
-            el_time = _('Elapsed time')
+            str_0 = _('This might take a while.')
+            str_1 = _('Elapsed time')
             secs = _('seconds')
-            elapsed_time = f"{time.time() - start_time:0.1f}"
+            time_elapsed = f"{time.time() - start_time:0.1f}"
             
-            spinner['-spinner_text-'].update(f"{show_text}.. {be_patient}.\n{el_time}: {elapsed_time} {secs}")
+            spinner['-spinner_text-'].update(
+                f"{show_text}.. {str_0}.\n{str_1}: {time_elapsed} {secs}"
+                )
     
     
     # join threads
@@ -820,7 +877,11 @@ if __name__ == '__main__':
     ease['language'] = 'en'
     
     # Activate strings for selected langauge
-    language = gettext.translation('base', localedir='locales', languages=[ease['language']])
+    language = gettext.translation(
+                                    'base',
+                                    localedir='locales',
+                                    languages=[ease['language']]
+                                   )
     language.install()
     _ = language.gettext
     
@@ -1025,7 +1086,7 @@ if __name__ == '__main__':
         # Read events and values from Main
         Main_event, Main_value = Main.read()
         
-        print(f"Main_event  = {Main_event}\nMain_value  = {Main_value}")  # debug
+        #print(f"Main_event  = {Main_event}\nMain_value  = {Main_value}")  # debug
         
         # This must be separate from arg parsing below (bugfix)
         if Main_event == sg.WIN_CLOSED: break
@@ -1037,7 +1098,7 @@ if __name__ == '__main__':
             Encrypt = create_enc_window()
             while show_encrypt:
                 Encrypt_event, Encrypt_value = Encrypt.read()
-                print(f"Encrypt_event  = {Encrypt_event}\nEncrypt_value  = {Encrypt_value}")  # debug
+                #print(f"Encrypt_event  = {Encrypt_event}\nEncrypt_value  = {Encrypt_value}")  # debug
                 
                 if Encrypt_event == sg.WIN_CLOSED:
                     show_encrypt = False
@@ -1087,12 +1148,12 @@ if __name__ == '__main__':
                             # create output name from input file
                             uinput_basename = f"{uinput_file.replace(' ', '_')}" # extension determined by archive() and pyAesCrypt
                             uinput_files = [ uinput_file ] # list of 1
-                            # value = {0: '/home/sigg3/python/encyrpt_and_send/Icons8_flat_key.png', 'Browse': None, 'output_preview_str': '/home/sigg3/python/snek', 'Browse0': None, 'compression': True, 'tar': True, 'zip': False, 'uinput_passphrase': 'l'}                           
                             
                         else:
                             err_str = _('Selected input is not recognized as file(s)')
                             sg.popup_error(f"{err_str}:\n'{uinput_file}'", title=_('Error'))
                             show_encrypt = False
+                            break
                         
                         
                         # Check password length within third-party libs parameters
@@ -1101,11 +1162,12 @@ if __name__ == '__main__':
                             err_str = _('Error: password too short')
                             sg.popup_error(err_str, title=_('Error'))
                             show_encrypt = False
+                            break
                         elif len(uinput_passphrase) > 1024:
                             err_str = _('Error: password too long')
                             sg.popup_error(err_str, title=_('Error'))
                             show_encrypt = False
-                        
+                            break
                         
                         # Archive files (if desired or > 1)
                         if archive_files:
@@ -1211,7 +1273,7 @@ if __name__ == '__main__':
             # Do decryption loop
             while show_decrypt:
                 Decrypt_event, Decrypt_value = Decrypt.read()
-                print(f"Decrypt_event  = {Decrypt_event}\nDecrypt_value  = {Decrypt_value}")  # debug
+               # print(f"Decrypt_event  = {Decrypt_event}\nDecrypt_value  = {Decrypt_value}")  # debug
                 if Decrypt_event == sg.WIN_CLOSED:
                     show_decrypt = False
                 
@@ -1288,11 +1350,6 @@ if __name__ == '__main__':
                                     # Output saved in ease['thread']
                                     run_in_the_background('unarchive', [str(output_file), uinput_outdir])
                                     
-                                    # There is a bug here, cf.
-                                    # ~/Downloads/CentOS-8.1.1911-x86_64-dvd1/test/home/sigg3/Downloads/CentOS-8.1.1911-x86_64-dvd1$ 
-                                    
-                                    # it extracts to target/dir + full path to original, instead of just target dir..
-                                    
                                     # parse returns from background thread
                                     if type(ease['thread'][0]) is list:
                                         pass
@@ -1358,8 +1415,9 @@ if __name__ == '__main__':
                             show_decrypt = False
                             
                         else:
+                            err_str = _('File not AES v2 format (pyAesCrypt).')
                             sg.popup_error(
-                                f"'{uinput_file}' != AES v2 (pyAesCrypt).",
+                                err_str,
                                 title=_('Error')
                                 )
                             show_decrypt = False
@@ -1432,7 +1490,7 @@ if __name__ == '__main__':
                         err_str = _('Error')
                         sg.popup_error(
                                        f"{err_str}: {e}",
-                                       title=_('Error')
+                                       title=err_str
                                        )
                         show_send = False # quit to main
                     
@@ -1452,7 +1510,7 @@ if __name__ == '__main__':
 
             while show_about:
                 About_event, About_value = About.read()
-                print(f"About_event  = {About_event}\nAbout_value  = {About_value}")  # debug
+#print(f"About_event  = {About_event}\nAbout_value  = {About_value}")  # debug
                 
                 if About_event == sg.WIN_CLOSED:
                     show_about = False
