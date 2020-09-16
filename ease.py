@@ -72,15 +72,25 @@ _ = gettext.gettext
 
 def setup_transmitters() -> dict:
     """
-    Returns dict of file transmission alternatives (for sending over WWW).
+    Returns dict of online file transfer sites (for sending over WWW).
     Separated into its own function for maintenance reasons.
-    Each entry must contain: URL, date (changed), file expire (in days),
-    max file size (in GB), require login (bool), automatation enabled (bool),
-    cap data string (what are service limitations).
+    Use _('string encapsulation') for strings that should be translated.
+    
+    Each entry must contain:
+    - short name (e.g. URL without protocol)
+    - URL (preferably https)
+    - date (changed/updated/added)
+    - file expire (in days)
+    - max file size for any single file in GB
+    - require login (bool)
+    - known limitations (short string)
+    - working URL to faq or help page (used for reference)
+    - automation enabled (bool)
     
     Automation disabled at the time of writing.
-    Setting automated to True entails writing an linking to a function to
-    deal with automating file upload (e.g. selenium script).
+    Setting automated to True entails writing and linking a function
+    that accepts .aes input file and sends it across the desired site
+    (using e.g. selenium) and returning the URL created to the end-user.
     
     Use _('string encapsulation') for strings that should be translated.
     """
