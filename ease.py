@@ -731,10 +731,10 @@ def archive(file_basename: str,
             use_compression: bool,
             input_files: list) -> Tuple[list, str]:
     """
-    Write tar or zip file, depending on use_tar bool, containing items in
-    input_files list with optional (medium) compression. This function handles
-    filename too, given a basename. Returns tuple with a list of file(s)
-    successfully archived and the final filename we wrote to.
+    Write tar or zip file, depending on use_tar bool, containing items
+    in input_files list with optional (medium) compression. The function
+    handles filename too, given a basename. Returns tuple with a list
+    of file(s) successfully archived and the final filename we wrote.
     Requires tarfile, zipfile, zlib, Path (pathlib)
     """
     # Setup return vals
@@ -837,8 +837,10 @@ def unarchive(archive_filename: str, output_dir: str) -> Tuple[list, list]:
     return extracted, skipped
 
 
+
 # Threading functions
 # The functions below are related to / used by threading
+
 def create_spinner(show_text: str, show_time: float) -> Type[sg.Window]:
     """
     Helper function to create (and re-create) "Working..." popup
@@ -868,7 +870,8 @@ def create_spinner(show_text: str, show_time: float) -> Type[sg.Window]:
                     )
 
 
-def unarchive_worker(archive_filename: str,
+def unarchive_worker(
+                     archive_filename: str,
                      output_dir: str,
                      out_dict: dict,
                      out_index: str):
@@ -878,7 +881,10 @@ def unarchive_worker(archive_filename: str,
     """
     
     try:
-        extracted, skipped = unarchive(archive_filename, output_dir)
+        extracted, skipped = unarchive(
+                                       archive_filename,
+                                       output_dir
+                                       )
     except TypeError:
         # not an error, input not an archive. we will not unarchive it
         # use might have sent a file with .tar extension that is not tar ..
@@ -899,7 +905,12 @@ def archive_worker(file_basename: str,
     Helper function to run archive() in a separate thread using Thread.
     Will save return values from archive into out_dict <dict> index <index>
     """
-    out_dict[out_index] = archive(file_basename, use_tar, use_compression, input_files)
+    out_dict[out_index] = archive(
+                                   file_basename,
+                                   use_tar,
+                                   use_compression,
+                                   input_files
+                                  )
 
 
 def aescrypt_worker(encrypt: bool,
@@ -912,21 +923,20 @@ def aescrypt_worker(encrypt: bool,
     Helper function to execute encryp/decryption (depending on encrypt bool)
     in a separate thread. Returns status message to out_dict['out_index']
     """
-    
+
+    # Get universal buffer size
     buffer_size = ease['buffer']
     
-    
+    # Determine method
     if encrypt:
-        string_action= _('Encryption')
         aes_exec = pyAesCrypt.encryptFile
-        
     else:
-        string_action= _('Decryption') # not sure this is in use .. ? TODO
         aes_exec = pyAesCrypt.decryptFile
     
+    # Execute work
     try:
         aes_exec(input_f, output_f, user_passphrase, buffer_size)
-        out_dict[out_index] = (0, None)
+        out_dict[out_index] = (0, None) # 0 == success
     except IOError as e:
         out_dict[out_index] = (1, e)
     except Exception as e:
