@@ -62,7 +62,7 @@ EASE is currently available in: English, Norwegian.
 
 Find locale .pot files in the locales directory. EASE only uses one domain (base). Using a GUI application like Poedit (https://poedit.net/) it's simple to translate EASE to your language.
 
-Please be warned: _String set is incomplete and subject to change._ I will remove this warning when the string set is stable. We're currently on version 0.75, and we need to get to 1.0 for stable strings.
+Please be warned: _String set is incomplete and subject to change._ I will remove this warning when the string set is stable. We're currently on version 0.75, and we need to get to 1.0 for stable strings, specifically _automated send-file_ in roadmap (above).
 
 
 ## Screenshots
