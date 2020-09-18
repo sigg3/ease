@@ -21,7 +21,9 @@ EASE currently runs on GNU/Linux and Microsoft Windows (Apple OS untested).
 
 ## Installation
 
-Microsoft Windows and Apple OS binaries and GNU/Linux packages are plannet but not yet available.
+Microsoft Windows binaries for English and Norwegian are available in the dist folder. The zip files contains ease.exe and a locales directory with the appropriate language file. (This is not ideal and will be fixed later.) Please note that Windows Defender and Windows SmartScreen will probably "recognize" ease.exe as a potential threat, since it has an unknown publisher (me). Telling them to ignore the directory or run anyway seems to do the trick.
+
+Apple OS binaries and GNU/Linux packages are plannet but not yet available.
 
 ### Run test-version (linux)
 ```
