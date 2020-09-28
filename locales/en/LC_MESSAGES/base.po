@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-10 11:46+0200\n"
+"POT-Creation-Date: 2020-09-25 09:43+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,273 +17,506 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: eas.py:137 eas.py:245
+#: ease.py:112
+msgid "files stored for 90 days."
+msgstr ""
+
+#: ease.py:121
+msgid "None"
+msgstr ""
+
+#: ease.py:124
+msgid "files 0-2 GB in size must queue."
+msgstr ""
+
+#: ease.py:136
+msgid "store up to 5GB per month"
+msgstr ""
+
+#: ease.py:148
+msgid "free account gives 2GB storage total"
+msgstr ""
+
+#: ease.py:180 ease.py:351
 msgid "Encrypt"
 msgstr ""
 
-#: eas.py:138 eas.py:305
+#: ease.py:181 ease.py:458
 msgid "Decrypt"
 msgstr ""
 
-#: eas.py:139 eas.py:362
+#: ease.py:182 ease.py:557
 msgid "Send"
 msgstr ""
 
-#: eas.py:140
+#: ease.py:183
 msgid "About"
 msgstr ""
 
-#: eas.py:149
+#: ease.py:197
 msgid ""
 "Encrypt a file or files securely so it's safe to distribute, or decrypt "
 "files you have received."
 msgstr ""
 
-#: eas.py:150
+#: ease.py:202
 msgid ""
 "This utility uses AES256-CBC (pyAesCrypt) to encrypt/decrypt files in the "
 "AES Crypt file format v.2."
 msgstr ""
 
-#: eas.py:203
+#: ease.py:259
 msgid "Enable compression (smaller file size)"
 msgstr ""
 
-#: eas.py:229
+#: ease.py:311
 msgid ""
 "Securely encrypt file(s), so it is safe to distribute over untrusted service "
 "(like e-mail)."
 msgstr ""
 
-#: eas.py:230
+#: ease.py:316
 msgid ""
 "If you select more than one file, they will be gathered in an encrypted "
 "archive."
 msgstr ""
 
-#: eas.py:231
+#: ease.py:321
 msgid "If your recipient uses Windows, consider using zip instead of tar."
 msgstr ""
 
-#: eas.py:233
+#: ease.py:328
 msgid "Select input file(s):"
 msgstr ""
 
-#: eas.py:234 eas.py:302
+#: ease.py:333 ease.py:449
 msgid "Specify where to save the output"
 msgstr ""
 
-#: eas.py:235
+#: ease.py:338
 msgid "Archiving options (for groups of files)"
 msgstr ""
 
-#: eas.py:237
+#: ease.py:342 ease.py:606
 msgid "It is recommended to use a full sentence as the passphrase."
 msgstr ""
 
-#: eas.py:241 eas.py:303
+#: ease.py:347 ease.py:454
 msgid "Passphrase"
 msgstr ""
 
-#: eas.py:246 eas.py:306 eas.py:364
+#: ease.py:352 ease.py:459 ease.py:566
 msgid "Cancel"
 msgstr ""
 
-#: eas.py:277
+#: ease.py:384
 msgid "Automatically decompress decrypted archives"
 msgstr ""
 
-#: eas.py:278
+#: ease.py:390
 msgid "Remove source .aes file after decryption"
 msgstr ""
 
-#: eas.py:297
+#: ease.py:428
 msgid "Decrypt any encrypted .aes file you have received."
 msgstr ""
 
-#: eas.py:298
+#: ease.py:432
 msgid ""
 "If the decrypted file is a tarball or zip archive, it will be extracted."
 msgstr ""
 
-#: eas.py:300
+#: ease.py:439
 msgid "Select input file(s)"
 msgstr ""
 
-#: eas.py:301
+#: ease.py:444
 msgid "Decryption options"
 msgstr ""
 
-#: eas.py:346
+#: ease.py:526
 msgid "Sometimes files are too big for attaching to e-mails."
 msgstr ""
 
-#: eas.py:347
+#: ease.py:530
 msgid "Most of these online file transfer services do not require a login."
 msgstr ""
 
-#: eas.py:348
+#: ease.py:534
 msgid "Select any provider to visit their website or attempt sending."
 msgstr ""
 
-#: eas.py:351
+#: ease.py:540
 msgid "Choose file transfer service: "
 msgstr ""
 
-#: eas.py:363
+#: ease.py:562
 msgid "Open URL"
 msgstr ""
 
-#: eas.py:474 eas.py:791
+#: ease.py:589
+msgid "Submit issues and new translations at"
+msgstr ""
+
+#: ease.py:595
+msgid "EASE is written by Sigbjørn Smelror (c) 2020, GNU GPL v.3+, to provide"
+msgstr ""
+
+#: ease.py:596
+msgid "a hopefully user-friendly graphical interface to the pyAesCrypt module."
+msgstr ""
+
+#: ease.py:597
+msgid ""
+"It is distributed in the hope that it will be useful, but without any "
+"warranty."
+msgstr ""
+
+#: ease.py:598
+msgid "See the GNU General Public License for more details."
+msgstr ""
+
+#: ease.py:601
+msgid "Usage should be fairly straight-forward: Encrypt -> Send -> Decrypt"
+msgstr ""
+
+#: ease.py:603 ease.py:1063
 msgid "Encrypting"
 msgstr ""
 
-#: eas.py:480
+#: ease.py:604
+msgid "The sender clicks the Encrypt button, selects the file(s) to encrypt,"
+msgstr ""
+
+#: ease.py:605
+msgid "and encrypts them using a passphrase (password) of his or her choosing."
+msgstr ""
+
+#: ease.py:607
+msgid "This produces an encrypted AES Crypt v.2 file that has an .aes suffix."
+msgstr ""
+
+#: ease.py:609
 msgid "Sending"
 msgstr ""
 
-#: eas.py:486 eas.py:791
+#: ease.py:610
+msgid "The encrypted .aes file can be distributed over untrusted services like"
+msgstr ""
+
+#: ease.py:611
+msgid ""
+"e-mail or any of the file transfer services available when clicking Send."
+msgstr ""
+
+#: ease.py:612
+msgid "Some services will provide a download link (URL) the recipient can use."
+msgstr ""
+
+#: ease.py:613
+msgid "Remember: never send an encrypted file and its passphrase together!"
+msgstr ""
+
+#: ease.py:615 ease.py:1065
 msgid "Decrypting"
 msgstr ""
 
-#: eas.py:497
+#: ease.py:616
+msgid ""
+"Having received the encrypted .aes file through e-mail or a service (above),"
+msgstr ""
+
+#: ease.py:617
+msgid ""
+"the recipient simply clicks the Decrypt button, selects the (.aes) file and"
+msgstr ""
+
+#: ease.py:618
+msgid "enters the passphrase (password) provided separately by the sender."
+msgstr ""
+
+#: ease.py:619
+msgid "And that's it!"
+msgstr ""
+
+#: ease.py:621
+msgid "EASE Crypto relies on pyAesCrypt, password_strength and zxcvbn-python"
+msgstr ""
+
+#: ease.py:622
+msgid ""
+"Graphical interface is provided by PySimpleGUIQt, translations use gettext."
+msgstr ""
+
+#: ease.py:623
+msgid ""
+"EASE is not affiliated with any of the file transfer services mentioned, and"
+msgstr ""
+
+#: ease.py:624
+msgid ""
+"please submit an issue if any of the services are terminated or changed."
+msgstr ""
+
+#: ease.py:628
 msgid "Homepage"
 msgstr ""
 
-#: eas.py:525
+#: ease.py:632
+msgid "OK"
+msgstr ""
+
+#: ease.py:665
 msgid "Max file size"
 msgstr ""
 
-#: eas.py:527
+#: ease.py:667
 msgid "Expires (days)"
 msgstr ""
 
-#: eas.py:531
+#: ease.py:671
 msgid "Require log-in"
 msgstr ""
 
-#: eas.py:534
+#: ease.py:674
 msgid "Yes"
 msgstr ""
 
-#: eas.py:537
+#: ease.py:677
 msgid "No"
 msgstr ""
 
-#: eas.py:540
+#: ease.py:680
 msgid "Limitations"
 msgstr ""
 
-#: eas.py:548
+#: ease.py:688
 msgid "FAQ"
 msgstr ""
 
-#: eas.py:588
+#: ease.py:728
 msgid "Passphrase entropy bits"
 msgstr ""
 
-#: eas.py:589
+#: ease.py:729
 msgid "complexity"
 msgstr ""
 
-#: eas.py:702 eas.py:836
+#: ease.py:730
+msgid "score"
+msgstr ""
+
+#: ease.py:770 ease.py:792
+msgid "Add another word or two. Uncommon words are better."
+msgstr ""
+
+#: ease.py:790
+msgid "Use a few words, avoid common phrases."
+msgstr ""
+
+#: ease.py:791
+msgid "No need for symbols, digits, or uppercase letters."
+msgstr ""
+
+#: ease.py:793
+msgid "Straight rows of keys are easy to guess."
+msgstr ""
+
+#: ease.py:794
+msgid "Short keyboard patterns are easy to guess."
+msgstr ""
+
+#: ease.py:795
+msgid "Use a longer keyboard pattern with more turns."
+msgstr ""
+
+#: ease.py:796
+msgid "Repeats like \"aaa\" are easy to guess."
+msgstr ""
+
+#: ease.py:797
+msgid ""
+"Repeats like \"abcabcabc\" are only slightly harder to guess than \"abc\"."
+msgstr ""
+
+#: ease.py:798
+msgid "Avoid repeated words and characters."
+msgstr ""
+
+#: ease.py:799
+msgid "Sequences like \"abc\" or \"6543\" are easy to guess."
+msgstr ""
+
+#: ease.py:800
+msgid "Recent years are easy to guess."
+msgstr ""
+
+#: ease.py:801
+msgid "Avoid recent years."
+msgstr ""
+
+#: ease.py:802
+msgid "Avoid years that are associated with you."
+msgstr ""
+
+#: ease.py:803
+msgid "Dates are often easy to guess."
+msgstr ""
+
+#: ease.py:804
+msgid "Avoid dates and years that are associated with you."
+msgstr ""
+
+#: ease.py:805
+msgid "This is a top-10 common password."
+msgstr ""
+
+#: ease.py:806
+msgid "This is a top-100 common password."
+msgstr ""
+
+#: ease.py:807
+msgid "This is a very common password."
+msgstr ""
+
+#: ease.py:808
+msgid "This is similar to a commonly used password."
+msgstr ""
+
+#: ease.py:809
+msgid "A word by itself is easy to guess."
+msgstr ""
+
+#: ease.py:810
+msgid "Names and surnames by themselves are easy to guess."
+msgstr ""
+
+#: ease.py:811
+msgid "Common names and surnames are easy to guess."
+msgstr ""
+
+#: ease.py:812
+msgid "Capitalization doesn't help very much."
+msgstr ""
+
+#: ease.py:813
+msgid "All-uppercase is almost as easy to guess as all-lowercase."
+msgstr ""
+
+#: ease.py:814
+msgid "Reversed words aren't much harder to guess."
+msgstr ""
+
+#: ease.py:815
+msgid "Predictable substitutions like '@' instead of 'a' don't help very much."
+msgstr ""
+
+#: ease.py:941 ease.py:1106
 msgid "This might take a while."
 msgstr ""
 
-#: eas.py:703 eas.py:837
+#: ease.py:942 ease.py:1107
 msgid "Elapsed time"
 msgstr ""
 
-#: eas.py:704 eas.py:838
+#: ease.py:943 ease.py:1108
 msgid "seconds"
 msgstr ""
 
-#: eas.py:749
-msgid "Encryption"
-msgstr ""
-
-#: eas.py:753
-msgid "Decryption"
-msgstr ""
-
-#: eas.py:784
+#: ease.py:1056
 msgid "Archiving"
 msgstr ""
 
-#: eas.py:787
+#: ease.py:1059
 msgid "Extracting"
 msgstr ""
 
-#: eas.py:1063
+#: ease.py:1358
 msgid "Error removing file"
 msgstr ""
 
-#: eas.py:1066 eas.py:1139 eas.py:1147 eas.py:1151 eas.py:1340 eas.py:1382
-#: eas.py:1397 eas.py:1403 eas.py:1454 eas.py:1457 eas.py:1464 eas.py:1467
-#: eas.py:1499 eas.py:1502
+#: ease.py:1361 ease.py:1444 ease.py:1456 ease.py:1464 ease.py:1656
+#: ease.py:1740 ease.py:1751 ease.py:1801 ease.py:1818 ease.py:1825
+#: ease.py:1882 ease.py:1885 ease.py:1892 ease.py:1927
 msgid "Error"
 msgstr ""
 
-#: eas.py:1138 eas.py:1380 eas.py:1401
-msgid "Selected input is not recognized as file(s)"
+#: ease.py:1441 ease.py:1799 ease.py:1823
+msgid "Selected input not recognized as file(s)"
 msgstr ""
 
-#: eas.py:1146
+#: ease.py:1453
 msgid "Error: password too short"
 msgstr ""
 
-#: eas.py:1150
+#: ease.py:1461
 msgid "Error: password too long"
 msgstr ""
 
-#: eas.py:1173
+#: ease.py:1495
 msgid "Could not archive any files"
 msgstr ""
 
-#: eas.py:1174 eas.py:1178
+#: ease.py:1496 ease.py:1508
 msgid "Archiving error"
 msgstr ""
 
-#: eas.py:1177
-msgid "Could not archive all selected files"
+#: ease.py:1499
+msgid "Aborting"
 msgstr ""
 
-#: eas.py:1213
+#: ease.py:1507
+msgid "Could not archive all the files"
+msgstr ""
+
+#: ease.py:1556
 msgid "Successfully encrypted the input file(s)"
 msgstr ""
 
-#: eas.py:1216
+#: ease.py:1561
 msgid "Success!"
 msgstr ""
 
-#: eas.py:1224 eas.py:1312
+#: ease.py:1570 ease.py:1701
 msgid "I/O error"
 msgstr ""
 
-#: eas.py:1227
+#: ease.py:1576
 msgid "Encryption error"
 msgstr ""
 
-#: eas.py:1230
+#: ease.py:1582
 msgid "Unhandled exception"
 msgstr ""
 
-#: eas.py:1238
+#: ease.py:1593
 msgid "Selected folder is not a folder"
 msgstr ""
 
-#: eas.py:1316
+#: ease.py:1653
+msgid "Selected directory not a directory"
+msgstr ""
+
+#: ease.py:1710
 msgid "Decryption error"
 msgstr ""
 
-#: eas.py:1365 eas.py:1372
+#: ease.py:1778 ease.py:1787
 msgid "Successfully decrypted input file(s)"
 msgstr ""
 
-#: eas.py:1368
+#: ease.py:1783
 msgid "Success"
 msgstr ""
 
-#: eas.py:1373
+#: ease.py:1788
 msgid "Skipped items"
+msgstr ""
+
+#: ease.py:1795
+msgid "Partial success"
+msgstr ""
+
+#: ease.py:1815
+msgid "File not AES v2 format (pyAesCrypt)."
 msgstr ""
