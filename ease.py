@@ -1950,7 +1950,7 @@ if __name__ == "__main__":
     # Select GUI language
     # default is: en
     # available: en, no
-    ease["language"] = "no"
+    ease["language"] = "en"
     
     # Configure selected langauge
     language = gettext.translation(
