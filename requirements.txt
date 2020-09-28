@@ -7,3 +7,4 @@ PySide2==5.15.1
 PySimpleGUIQt==0.35.0
 shiboken2==5.15.1
 six==1.15.0
+zxcvbn==4.4.28
