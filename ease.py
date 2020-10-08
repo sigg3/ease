@@ -49,9 +49,6 @@ _ = gettext.gettext
 # TODO password evaluation
 # zxcvbn-python, add "evaluate" button under passphrase entry on Encrypt
 # 
-# TODO OOP branch
-# It's time to re-do this project OOP
-# 
 # TODO sending
 # Using selenium is not recommended at this stage, because we will need
 # a separate geckodriver install (and probably break ToS).
