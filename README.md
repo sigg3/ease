@@ -48,10 +48,10 @@ $ python3 ease.py
 ```
 
 ## Roadmap
-- [ ] implement unittest
+- [ ] implement pytest
 - [ ] object oriented modelling
 - [ ] package (.deb) for GNU/Linux
-- [ ] binaries for Microsoft Windows
+- [x] binaries for Microsoft Windows
 - [ ] binaries for Apple OS
 - [x] implement gettext translation
 - [ ] automated send-file attempt over selected service
