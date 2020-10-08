@@ -48,6 +48,10 @@ _ = gettext.gettext
 # List of issues, todos and bugs (by priority)
 # TODO password evaluation
 # zxcvbn-python, add "evaluate" button under passphrase entry on Encrypt
+#
+# TODO cut up file
+# Separating files, e.g. having a setup_transmitters.py file for 
+# def setup_transmitters: how does it affect translating?
 # 
 # TODO sending
 # Using selenium is not recommended at this stage, because we will need
