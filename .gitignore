@@ -1,3 +1,4 @@
 *.pyc
 venv/
 ease-dev/
+obsolete_code/
