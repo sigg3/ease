@@ -53,6 +53,7 @@ $ python3 ease.py
 - [ ] binaries for Apple OS
 - [x] implement gettext translation
 - [ ] automated send-file attempt over selected service
+- [ ] send file directly (magic-wormhole)
 - [x] webbrowser open an online file transport service
 - [x] encrypt file or group of files
 - [x] archiving files (with or without compression)
