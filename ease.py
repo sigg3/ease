@@ -726,19 +726,19 @@ def get_password_strength(uinput_passphrase: str) -> str:
     Use: get_password_strength(Encrypt_value['uinput_passphrase'])
     """
     # string wrangling
-    str_entr = _("Passphrase entropy bits")
-    str_comp = _("complexity")
-    str_score = _("score")
+    entropy = _("Passphrase entropy bits")
+    complexity = _("complexity")
+    score = _("score")
     
     if uinput_passphrase is None or uinput_passphrase == "":
-        return f"{str_entr}: 0.0, {str_comp}: 0.00, {str_score}: 0"
+        return f"{entropy}: 0.0, {complexity}: 0.00, {score}: 0"
 
     stats = PasswordStats(uinput_passphrase)
-    pass_complexity = f"{stats.strength():0.2f}"
-    pass_entropy = f"{stats.entropy_bits:0.1f}"
-    pass_score = zxcvbn(uinput_passphrase)["score"]
+    pass_c = f"{stats.strength():0.2f}"
+    pass_e = f"{stats.entropy_bits:0.1f}"
+    pass_s = zxcvbn(uinput_passphrase)["score"]
     
-    return f"{str_entr}: {pass_entropy}, {str_comp}: {pass_complexity}, {str_score}: {pass_score}"
+    return f"{entropy}: {pass_e}, {complexity}: {pass_c}, {score}: {pass_s}"
 
 
 def evaluate_password(input_pass: str):
@@ -770,24 +770,18 @@ def evaluate_password(input_pass: str):
     # Suggestion strings
     str_addword = _("Add another word or two. Uncommon words are better.")
     
-
-    
-    
-    
     
     
     return str_addword
-    
-    
-    pass
 
 
 def translate_zxcvbn_strings():
     """
     Helper function to expose strings from imported module
     zxcvbn's feedback.py to local gettext extraction
-    This dummy function provides a stale workaround. # TODO
+    This dummy function provides a stale workaround.
     """
+    # TODO find a smarter solution..
     str_null = _("Use a few words, avoid common phrases."),
     str_null = _("No need for symbols, digits, or uppercase letters.")
     str_null = _("Add another word or two. Uncommon words are better.")
