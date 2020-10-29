@@ -48,6 +48,8 @@ _ = gettext.gettext
 # List of issues, todos and bugs (by priority)
 # TODO password evaluation
 # zxcvbn-python, add "evaluate" button under passphrase entry on Encrypt
+# Note: This is a good candidate for separate module.
+# Move zxcvbn-python to separate module.
 #
 # TODO cut up file
 # Separating files, e.g. having a setup_transmitters.py file for 
@@ -162,6 +164,13 @@ def setup_transmitters() -> dict:
     
     # return any hits
     return sites
+
+
+# Classes
+
+
+
+
 
 
 def create_main_window() -> Type[sg.Window]:
@@ -777,9 +786,9 @@ def evaluate_password(input_pass: str):
 
 def translate_zxcvbn_strings():
     """
-    Helper function to expose strings from imported module
+    Dummy function to expose strings from imported module
     zxcvbn's feedback.py to local gettext extraction
-    This dummy function provides a stale workaround.
+    This dummy function provides a stale workaround. TBD
     """
     # TODO find a smarter solution..
     str_null = _("Use a few words, avoid common phrases."),
