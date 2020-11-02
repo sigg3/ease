@@ -4,6 +4,68 @@ import tarfile
 import re
 import datetime
 
+class ArchiveFile():
+    def __init__(self):
+        self.is_archive = False
+        self.is_zip = False
+        self.is_tar = False
+        self.is_archive = check_is_archive(self)
+    
+    def check_is_archive(self):
+        """ Determine if file is archive """
+        if zipfile.is_zipfile(self.as_string):
+            self.is_archive, self.is_zip = True, True
+        elif tarfile.is_tarfile(self.as_string):
+            self.is_archive, self.is_tar = True, True
+        return self.is_archive
+
+
+
+class UserFile():
+    def __init__(self, path):
+        self.as_string = path_as_string
+        self.path = Path(self.as_string)
+        self.is_file = is_file()
+        
+    
+    def is_file(self):
+        """ Determine if file of instance exists"""
+        return self.path.is_file()
+        
+    def check_is_archive(self):
+        """ Determine if file is archive """
+        if zipfile.is_zipfile(self.as_string):
+            self.is_archive, self.is_zip = True, True
+        elif tarfile.is_tarfile(self.as_string):
+            self.is_archive, self.is_tar = True, True
+        return self.is_archive
+    
+    def is_encrypted(self):
+        with open(self.as_string, "rb") as raw:
+            b = str(raw.read(32))
+        raw.close()
+        
+        # Major: actual file type
+        if "AES" in b or "aescrypt" in b.lower():
+            self.is_aes = True
+        else:
+            self.is_aes = False
+        
+        # Minor: filename extension
+        self.is_easefile = self.as_string.endswith('.aes')
+        
+        return self.is_aes
+    
+    def is_easefile(self):
+        
+
+
+
+
+
+
+
+### RUBBISH BELO ###
 
 class UserFile(EaseIO):
     """
@@ -26,6 +88,7 @@ class UserFile(EaseIO):
         # path_as_string is file path str from GUI
         EaseIO.__init__(self, path_as_string)
         
+        # Determine encrypted file path
         if self.is_encrypted:
             self.encrypted = self.path
             if self.aes_ext:
@@ -36,8 +99,7 @@ class UserFile(EaseIO):
             self.decrypted = self.path
             self.encrypted = set_suffix(self, '.aes')
             #self.encrypted = Path(str(self.path+".aes"))
-        
-        
+        #
         if self.is_archive:
             self.compressed = self.path
             if self.is_zip:
