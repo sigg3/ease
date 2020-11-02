@@ -4,6 +4,9 @@ import tarfile
 import re
 import datetime
 
+
+
+
 class ArchiveFile():
     def __init__(self):
         self.is_archive = False
@@ -20,18 +23,21 @@ class ArchiveFile():
         elif tarfile.is_tarfile(self.as_string):
             self.is_archive, self.use_tar = True, True
         return self.is_archive
-    
-    def archive(self,
-                file_basename: str, 
-                use_tar: bool,
-                use_compression: bool,
-                input_files: list):
-                    
-        
-        file_basename: str,
-            use_tar: bool,
-            use_compression: bool,
-            input_files: list
+
+    def archive(self, input_files: list):
+        """packs input files in tar or zip"""
+        #       file_basename: str,
+        #       use_tar: bool,
+        #       use_compression: bool,
+        #       input_files: list):
+        pass
+
+    def extract(self):
+        """unpacks input file"""
+        if check_is_archive(self):
+
+        else:
+            raise TypeError "not an archive"
     
     
 
