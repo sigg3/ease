@@ -7,19 +7,33 @@ import datetime
 class ArchiveFile():
     def __init__(self):
         self.is_archive = False
-        self.is_zip = False
-        self.is_tar = False
+        self.use_zip = False
+        self.use_tar = False
+        self.use_compression = False
         self.is_archive = check_is_archive(self)
-    
+        
+        
     def check_is_archive(self):
         """ Determine if file is archive """
         if zipfile.is_zipfile(self.as_string):
-            self.is_archive, self.is_zip = True, True
+            self.is_archive, self.use_zip = True, True
         elif tarfile.is_tarfile(self.as_string):
-            self.is_archive, self.is_tar = True, True
+            self.is_archive, self.use_tar = True, True
         return self.is_archive
-
-
+    
+    def archive(self,
+                file_basename: str, 
+                use_tar: bool,
+                use_compression: bool,
+                input_files: list):
+                    
+        
+        file_basename: str,
+            use_tar: bool,
+            use_compression: bool,
+            input_files: list
+    
+    
 
 class UserFile():
     def __init__(self, path):
@@ -27,10 +41,12 @@ class UserFile():
         self.path = Path(self.as_string)
         self.is_file = is_file()
         
+        
     
     def is_file(self):
         """ Determine if file of instance exists"""
-        return self.path.is_file()
+        self.is_file = self.path.is_file()
+        return self.is_file
         
     def check_is_archive(self):
         """ Determine if file is archive """
