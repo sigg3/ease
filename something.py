@@ -8,22 +8,27 @@ import datetime
 class UserFile():
     def __init__(self, input: str):
         self.input = input
+        self.as_string = input
+        self.is_file = False
         self.output = None
         self.temporary = None
-        self.as_string = input
-        self.path = Path(self.as_string)
-        self.is_file = self.path.is_file()
+        self.path = None
+        self.source_dir = None
+        self.basename = None
         if ";" in self.input:
             self.list = self.input.split(sep=";")
+            _count = [ x for x in self.list if Path(x).is_file() ]
+            if len(_count) == len(self.list):
+                self.is_file = True
+                self.source_dir = Path(self.list[0]).parent
         else:
             self.list = [ input ]
+            self.is_file = self.path.is_file()
+            if self.is_file:
+                self.path = Path(self.as_string)
+                self.source_dir = self.path.parent
 
-    def set_temp(self, path: str):
-        pass
-
-    def set_output(self, path: str):
-        pass
-
+        self.target_dir = self.source_dir
 
 
 class EaseFile(UserFile, ArchiveFile, CryptFile):
@@ -39,31 +44,28 @@ class EaseFile(UserFile, ArchiveFile, CryptFile):
                  compression: bool,
                  use_zip: bool
                  ):
-        # Names (not sure these are needed)
-        self.archived = None
-        self.extracted = None
-        self.encrypted = None
-        self.decrypted = None
-        self.zip = None
-        self.tar = None
 
-#        self.output
-#        self.output_encrypted =
-#        self.output_compressed =
-#        self.input_encrypted =
-#        self.input_compressed =
-#        self.input_uncompressed =
-#        self.input_decrypted =
-
-
-        # EASE generic file names
-        self.legacy = has_generic_name(self)
-        if not self.legacy:
-            self.generic = get_generic_name(self)
-
+        # List of file names
+        # self.archived = None
+        # self.extracted = None
+        # self.encrypted = None
+        # self.decrypted = None
+        # self.zip = None
+        # self.tar = None
 
         # Basics
         UserFile.__init__(self, input)
+
+        # EASE generic file names
+        self.legacy = False
+        self.generic = None
+        if self.path is not None:
+            self.legacy = has_generic_name(self)
+            if self.legacy:
+                self.generic = self.path
+            else:
+                self.generic = get_generic_name(self)
+
 
         # Archiving
         self.use_archiving = archiving
@@ -82,6 +84,9 @@ class EaseFile(UserFile, ArchiveFile, CryptFile):
 
         # TBD: TransmitFile
 
+    def update(self):
+        # update file names
+        pass
 
     def has_generic_name(self):
         """ checks whether file has generic ease name """
@@ -94,7 +99,7 @@ class EaseFile(UserFile, ArchiveFile, CryptFile):
         """ generates generic ease name string """
         tstamp = datetime.datetime.now().isoformat()
         tstamp, _ = tstamp.split(sep="T")
-        return self.parent / f"ease_{tstamp}"
+        return self.path.parent / f"ease_{tstamp}"
 
     def set_suffix(self, suffix):
         return Path(str(self.path.parent / self.path.stem) + suffix)
@@ -126,6 +131,7 @@ class ArchiveFile():
             #self.legacy = get_legacy_name(self)
             self.zip = set_suffix(self, '.zip')
             self.tar = set_suffix(self, '.tar')
+            self.use_tar = True # default
 
 
     def check_is_archive(self):
@@ -138,18 +144,28 @@ class ArchiveFile():
 
     def archive(self, input_files: list):
         """packs input files in tar or zip"""
-        #       file_basename: str,
-        #       use_tar: bool,
-        #       use_compression: bool,
-        #       input_files: list):
-        pass
-
-    def extract(self):
-        """unpacks input file"""
-        if check_is_archive(self):
-            pass
+        if self.is_archive:
+            raise Exception("Input already archived ..")
         else:
-            raise Exception("not an archive")
+            _wrk = [ self.path.stem,
+                     self.use_tar,
+                     self.use_compression,
+                     input_files ]
+
+            try:
+                run_in_the_background('archive', _wrk)
+                # TBD update files now here?
+            except Exception as e:
+                print(e)
+
+    def extract(self, input_file: str):
+        """unpacks input file"""
+        if self.is_archive:
+            _wrk = [ input_file, self.target_dir ]
+            run_in_the_background('unarchive', _wrk)
+        else:
+            raise Exception("File is not an archive")
+
 
 class CryptFile():
     """ Depends on run_in_the_background() """
