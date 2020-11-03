@@ -1125,7 +1125,7 @@ def run_in_the_background(worker_to_run: str, worker_args: list):
 
     # debug output
     if output_dict[output_index] is None:
-        print("Thread worker failure")
+        raise Exception("Thread worker failure")
 
 
 def setup_encoded_icons(name_of_settings_dict: str):
