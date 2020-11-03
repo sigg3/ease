@@ -174,11 +174,6 @@ def setup_transmitters() -> dict:
 
 # Classes
 
-
-
-
-
-
 def create_main_window() -> Type[sg.Window]:
     """
     Create (and re-create) main (or initial) window
@@ -377,8 +372,6 @@ the passphrase."))],
                         finalize=True
                         )
     return Encrypt
-
-
 
 
 def create_dec_window() -> Type[sg.Window]:
