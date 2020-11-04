@@ -41,6 +41,18 @@ class Settings():
         # thread dict for _this_ object
         self.thread = {}
 
+        # temporary files (for removal)
+        self.temporary = []
+
+    def clean_up(self):
+        for xfile in self.temporary:
+            try:
+                Path(xfile).unlink(missing_ok=True)
+            except Exception as e:
+                print(f"Could not remove temp: {xfile}")
+        self.temporary.clear()
+
+
 
     def populate_transmitters(self) -> dict:
         """
