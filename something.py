@@ -10,8 +10,8 @@ class UserFile():
         self.input = input
         self.as_string = input
         self.is_file = False
-        self.output = None
-        self.temporary = None
+        self.output = []
+        self.temporary = []
         self.path = None
         self.source_dir = None
         self.basename = None
@@ -42,7 +42,7 @@ class EaseFile(UserFile, ArchiveFile, CryptFile):
                  input: str,
                  archiving: bool,
                  compression: bool,
-                 use_zip: bool
+                 use_tar: bool
                  ):
 
         # List of file names
