@@ -40,6 +40,11 @@ import zipfile
 import tarfile
 import webbrowser
 
+# Local stuff
+import something
+import Settings
+
+
 # Translations
 import gettext
 _ = gettext.gettext
