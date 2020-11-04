@@ -19,7 +19,7 @@ class Settings():
         # set key-value entries
         self.__dict__.update(kwargs)
         
-         # Set "home" dir (our default)
+         # Set "home" dir (our zdefault)
         if Path.home().is_dir():
             self.home_dir = Path.home()
         else:
