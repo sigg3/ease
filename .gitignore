@@ -3,3 +3,4 @@ venv/
 ease-dev/
 obsolete_code/
 .idea/
+*.bak
