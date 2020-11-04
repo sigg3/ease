@@ -236,3 +236,41 @@ class CryptFile():
 class SendFile():
     """ Contains attr and methods for file transmission """
     pass
+
+
+class LoopControl():
+    """
+    Used in main() main loop
+    Each course of action has a recipe to follow
+    """
+    def __init__(self, type: str):
+        try:
+            LoopControl.type()
+        except:
+            if type == 0:
+                self.step = self.encrypt()
+            elif type == 1:
+                self.step = self.decrypt()
+            else:
+                self.step = self.send()
+
+    def send(self):
+        pass
+
+    def decrypt(self):
+        pass
+
+    def encrypt(self):
+        yield 'identify' # u know, substitute these with functions ...
+        yield 'archive'
+        yield 'encrypt'
+
+
+# action = LoopControl(0)
+# In [55]: action
+# Out[55]: 'identify'
+#
+# In [56]: action = next(loop.course_of_action)
+#
+# In [57]: action
+# Out[57]: 'archive'
