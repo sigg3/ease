@@ -1062,7 +1062,7 @@ def main():
     # Listed files will be removed (unlinked) in event loop
     # These are typically temporary files: e.g. when sending >1 file we
     # create an archive and encrypt that. The unencrypted archive is garbage.
-    ease.temporary = []
+    files_to_remove = ease.temporary
 
     # Create main window
     MainWindow = create_main_window()
@@ -1073,19 +1073,7 @@ def main():
 
         # Clean up temporary files
         if files_to_remove:
-            for xfile in files_to_remove:
-                try:
-                    # use unlink since we already use Path
-                    Path(xfile).unlink(missing_ok=True)
-                    print(f"removed {xfile}") # debug
-                except Exception as e:
-                    err_str = _("Error removing file")
-                    sg.popup_error(
-                                   f"{err_str} {xfile}.\n{e}",
-                                   title=_("Error")
-                                   )
-            files_to_remove.clear()
-
+            ease.clean_up()
 
         # Read events and values from Main
         Main_event, Main_value = MainWindow.read()
@@ -1118,6 +1106,25 @@ def main():
                             )
                     )
                 elif Encrypt_event == "-enc_encrypt-":
+
+                    # # TODO
+                    # 1. create object
+                    # 2. run LoopControl with object
+
+                    # create input file object
+                    file = EaseFile(
+                        Encrypt_value["enc_uinput_files"],
+                        Encrypt_value["compression"],
+                        Encrypt_value["tar"],
+                        Encrypt_value["zip"]
+                    )
+
+                    file.target_dir = Encrypt_value["output_preview_str"]
+
+                    # uinput_file is file.input
+                    # uinput_folder is file.target_dir
+                    #
+                    #
 
                     # Read input
                     uinput_file = Encrypt_value["enc_uinput_files"]

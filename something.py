@@ -37,12 +37,17 @@ class EaseFile(UserFile, ArchiveFile, CryptFile):
     attributes of an EaseFile object.
     """
 
+    use_tar = ease.use_tar
+    use_zip = False if ease.use_tar else True
+    compression = ease.use_compression
+
+
     def __init__(
                  self,
                  input: str,
-                 archiving: bool,
                  compression: bool,
-                 use_tar: bool
+                 use_tar: bool,
+                 use_zip: bool
                  ):
 
         # List of file names
@@ -52,6 +57,14 @@ class EaseFile(UserFile, ArchiveFile, CryptFile):
         # self.decrypted = None
         # self.zip = None
         # self.tar = None
+
+        if self.use_tar:
+            self.use_archiving = True
+        elif self.use_zip:
+            self.use_archiving = True
+        else:
+            self.use_tar = ease.use_tar
+            self.use_archiving = ease.archive
 
         # Basics
         UserFile.__init__(self, input)
@@ -119,16 +132,15 @@ class ArchiveFile():
                  compression: bool
                  ):
         self.is_archive = False
-        self.use_zip = False
-        self.use_tar = False
+        self.use_tar = True
         self.use_compression = False
         self.is_archive = check_is_archive(self)
         if self.is_archive:
             self.compressed = self.path
-            if self.use_zip:
-                self.zip = self.path
-            else:
+            if self.use_tar:
                 self.tar = self.path
+            else:
+                self.zip = self.path
         else:
             self.extracted = self.path
             #self.legacy = get_legacy_name(self)
@@ -246,9 +258,9 @@ class LoopControl():
     Used in main() main loop
     Each course of action has a recipe to follow
     """
-    def __init__(self, type: str):
+    def __init__(self, course_of_action: str):
         try:
-            LoopControl.type()
+            LoopControl.course_of_action()
         except:
             if type == 0:
                 self.step = self.encrypt()
