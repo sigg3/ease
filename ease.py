@@ -40,10 +40,11 @@ import zipfile
 import tarfile
 import webbrowser
 
+
 # Local stuff
 import something
-import Settings
-
+import settings
+import IPython
 
 # Translations
 import gettext
@@ -1111,6 +1112,10 @@ def main():
                     # 1. create object
                     # 2. run LoopControl with object
 
+                    # tar/zip selection is bool
+                    # and default is to use tar (uncompressed)
+                    # TBD remove zip from equation, standardize on tar
+
                     # create input file object
                     file = EaseFile(
                         Encrypt_value["enc_uinput_files"],
@@ -1119,69 +1124,17 @@ def main():
                         Encrypt_value["zip"]
                     )
 
-                    file.target_dir = Encrypt_value["output_preview_str"]
+                    # Retrieve other user input
+                    file.target_dir = Path(Encrypt_value["output_preview_str"])
+                    if file.target_dir.is_dir():
+                        pass
+                    else:
+                        file.target_dir = file.source_dir
 
-                    # uinput_file is file.input
-                    # uinput_folder is file.target_dir
-                    #
-                    #
-
-                    # Read input
-                    uinput_file = Encrypt_value["enc_uinput_files"]
-                    uinput_folder = Encrypt_value["output_preview_str"]
-                    uinput_passphrase = Encrypt_value["uinput_passphrase"]
-
-                    # Read archiving options
-                    # Note: will always force archiving for groups of files
-                    use_tar = ease.use_tar         # default (True)
-                    archive_files = ease.archive   # default (False)
-                    use_compression = ease.compression # default (False)
-                    if Encrypt_value["tar"]:
-                        use_tar = True
-                        archive_files = True
-                    elif Encrypt_value["zip"]:
-                        use_tar = False
-                        archive_files = True
-
-                    if Encrypt_value["compression"]:
-                        use_compression = True
-
-
-                    if Path.is_dir(Path(uinput_folder)):
-                        proceed_with_encryption = False # fallback: expect failure
-
-                        if ";" in uinput_file:
-                            # create output name from ISO 8601 date
-                            tstamp = datetime.datetime.now().isoformat()
-                            tstamp, _throwaway = tstamp.split(sep="T")
-                            uinput_basename = f"ease_{tstamp}"
-
-                            # populate input_files list for archiving
-                            # list of files that we need to tarball/zip
-                            uinput_files = uinput_file.split(sep=";")
-
-                            # turn on tarballing/archiving
-                            archive_files = True
-
-                        elif Path.is_file(Path(str(uinput_file))):
-                            # create output name from input file
-                            # extension determined by archive() and pyAesCrypt
-                            uinput_basename = f"{uinput_file.replace(' ', '_')}"
-                            uinput_files = [ uinput_file ]
-
-                        else:
-                            err_str = _("Selected input not recognized as file(s)")
-                            sg.popup_error(
-                                f"{err_str}:\n'{uinput_file}'",
-                                title=_("Error")
-                                )
-                            show_encrypt = False
-                            break
-
-
-                        # Check password length within third-party libs parameters
-                        # Note: EASE is not designed to enforce password policies.
-                        if len(uinput_passphrase) < 6:
+                    try:
+                        file.set_passphrase(Encrypt_value["uinput_passphrase"])
+                    except Exception as e:
+                        if e == "pass_too_short":
                             err_str = _("Error: password too short")
                             sg.popup_error(
                                 err_str,
@@ -1189,14 +1142,51 @@ def main():
                                 )
                             show_encrypt = False
                             break
-                        elif len(uinput_passphrase) > 1024:
+                        else:
                             err_str = _("Error: password too long")
                             sg.popup_error(
                                 err_str,
                                 title=_("Error")
                                 )
                             show_encrypt = False
-                            break
+
+
+                    # set safe fallback
+                    proceed_with_encryption = False
+
+                    # Here now, just execute loop control, u ass:!
+
+                    # uinput_file is file.input
+                    # uinput_folder is file.target_dir
+                    # uinput_files er file.list
+                    #
+                    #
+
+
+
+                    if file.use_archiving:
+                        number_of_inputs = len(file.list)
+                        try:
+                            # execute tar/zip in separate thread
+                            # save status messages to ease.thread
+                            file.archive()
+                            archive_status = ease.thread
+
+                            # if success, then archive file is encryption src
+                        except Exception as e:
+                            if e == "file_already_archived":
+                                pass
+                                # use this file as encryption  src TBD
+                            else:
+                                print(f"Exception: {e}")
+                                show_encrypt = False
+                                break
+
+
+
+
+
+
 
                         # Archive files (if desired or > 1)
                         if archive_files:
@@ -1668,14 +1658,12 @@ if __name__ == "__main__":
     # Initiate settings object 'ease'
     #   default: ease = Settings() # default English
     #   norwegian: ease = Settings(language="no")
-    ease = Settings(language="en")
+    ease = settings.Settings(language="en")
 
     # Configure selected langauge
-    language = gettext.translation(
-                                    "base",
+    language = gettext.translation("base",
                                     localedir="locales",
-                                    languages=ease.language]
-                                   )
+                                    languages=ease.language)
     # Activate gettext translation
     language.install()
     _ = language.gettext

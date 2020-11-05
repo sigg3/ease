@@ -1,5 +1,10 @@
 from pathlib import Path
 
+# Translations
+import gettext
+_ = gettext.gettext
+
+
 class Settings():
     # Name/Logo and Window Title
     # leave as-is, do not translate
@@ -19,23 +24,17 @@ class Settings():
     # PySimpleGUIQt template
     guitheme = "SystemDefaultForReal"
 
-    # base64 encoded PNG icons dict
-    icon = populate_icons()
-
-    # file sending services dict
-    sites = populate_transmitters()
-
     def __init__(self, **kwargs):
         # set key-value entries
         self.__dict__.update(kwargs)
 
-         # Set "home" dir (our zdefault)
+         # Set "home" dir (our default)
         if Path.home().is_dir():
             self.home_dir = Path.home()
         else:
             self.home_dir = Path.cwd()
 
-        # Set current output dir to default
+        # Set current homedir to output dir (default)
         self.output_dir = self.home_dir
 
         # thread dict for _this_ object
@@ -43,6 +42,12 @@ class Settings():
 
         # temporary files (for removal)
         self.temporary = []
+
+        # base64 encoded PNG icons dict
+        self.icon = self.populate_icons()
+
+        # file sending services dict
+        self.sites = self.populate_transmitters()
 
     def clean_up(self):
         for xfile in self.temporary:
@@ -150,50 +155,48 @@ class Settings():
 
         # Icons8 icon file (MIT) Copyright (C) The author(s)
         a["icon_decrypt"] = b'iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAB\
-                              HNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAB\
-                              l0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAJ\
-                              zSURBVGiB7ZjPahNRFIe/M23FIqigIFSrG0EjutCd6E43voAL\
-                              wWTQPIC7FHURV40IXQpW2yRSH8AX6Er6Aq3WCi4sVlyIGEQQb\
-                              ea4aNQoycy5M7dJF/Ntsri/8+eXm3tmbiAnJxOSJVifcIxRTq\
-                              OcAU4iTACHgYPAGLCvI20BP4FPwAawgbKGsMwmK1Lm3cAMaJP\
-                              LKLeAi10NZqUFvCBiRm6w6BLoZECbTKNUXONcSgA1CbltDTA3\
-                              onVChHqqtlwRQinRtEgDi0gVQbiTrSsHlLuqti/XJNKnFIh4F\
-                              SN5hrKIsAZ8ZIzPtPkhRb514vcwwi4iDtDmEMoJAi6hXOubMe\
-                              CUFFn1Y6BJGeVx3yRhujOhDTRmuSwhc0k5TD8h4LxR5xNTTZs\
-                              BpRC7vMARU57umHkmYwUSX/M31h04Gru6yWxiQ13oPJMEzMaL\
-                              Emp2GDXW3J+wfoWAdW0Ys/mpCdh3YHeGRtIybhFZDXzP0EhaT\
-                              DWtBr5kaCQtXy0iq4H1DI2kQ21vqDYDkvxE9E7AG5vMgrKUqZ\
-                              k0RLaaNgPBEAwYa9oMXOc18DZLP468Z5yXFqHJgAgKTGdqyY2\
-                              aXKVtEVqnEBIyh/AAYt8gfTBLiYdWsfuduMEF4CZbd+LjaXL0\
-                              oAUsITySEs9dArP9K7HAXiLOEnEOmHEKFqaIWGaEFSmmf854u\
-                              5z3upysftj6LEz0KJzyEvQ/5jOwU8kNpEKo+ko1eANCVUrc85\
-                              Vu8AYi20XFyjB2oKJ1ar7SDesMVHylyqdQKvIp9Jd8CjmTT6\
-                              F/yafQH4QpB23VV1lvBqTEfZOJnTyFEk14bh624Qz0NbENzef\
-                              keOAXZUqTVtznmewAAAAASUVORK5CYII='
+                            HNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0\
+                            RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAJzSUR\
+                            BVGiB7ZjPahNRFIe/M23FIqigIFSrG0EjutCd6E43voALwWTQPI\
+                            C7FHURV40IXQpW2yRSH8AX6Er6Aq3WCi4sVlyIGEQQbea4aNQoy\
+                            cy5M7dJF/Ntsri/8+eXm3tmbiAnJxOSJVifcIxRTqOcAU4iTACH\
+                            gYPAGLCvI20BP4FPwAawgbKGsMwmK1Lm3cAMaJPLKLeAi10NZqU\
+                            FvCBiRm6w6BLoZECbTKNUXONcSgA1CbltDTA3onVChHqqtlwRQi\
+                            nRtEgDi0gVQbiTrSsHlLuqti/XJNKnFIh4FSN5hrKIsAZ8ZIzPt\
+                            PkhRb514vcwwi4iDtDmEMoJAi6hXOubMeCUFFn1Y6BJGeVx3yRh\
+                            ujOhDTRmuSwhc0k5TD8h4LxR5xNTTZsBpRC7vMARU57umHkmYwU\
+                            SX/M31h04Gru6yWxiQ13oPJMEzMaLEmp2GDXW3J+wfoWAdW0Ys/\
+                            mpCdh3YHeGRtIybhFZDXzP0EhaTDWtBr5kaCQtXy0iq4H1DI2kQ\
+                            21vqDYDkvxE9E7AG5vMgrKUqZk0RLaaNgPBEAwYa9oMXOc18DZL\
+                            P468Z5yXFqHJgAgKTGdqyY2aXKVtEVqnEBIyh/AAYt8gfTBLiYd\
+                            WsfuduMEF4CZbd+LjaXL0oAUsITySEs9dArP9K7HAXiLOEnEOmH\
+                            EKFqaIWGaEFSmmf854u5z3upysftj6LEz0KJzyEvQ/5jOwU8kNp\
+                            EKo+ko1eANCVUrc85Vu8AYi20XFyjB2oKJ1ar7SDesMVHylyqdQ\
+                            KvIp9Jd8CjmTT6F/yafQH4QpB23VV1lvBqTEfZOJnTyFEk14bh6\
+                            24Qz0NbENzefkeOAXZUqTVtznmewAAAAASUVORK5CYII='
 
         # Icons8 icon file (MIT) Copyright (C) The author(s)
         a["icon_encrypt"] = b'iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAB\
-                             HNCSVQICAgIficonsAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGw\
-                             AAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoA\
-                             AAKNSURBVGiB7Zi/a1NRFMc/9/ZVA43kkW62LoVOgiJPUQeHB4\
-                             EOounm2P+horZbp4IIOthFXHURBwtujX35B6IU1MEKhWLApSWp\
-                             dqg19zg0wTSEvJf3I7H4PlPu5Zx7vt+8c96FBykp/zcqzsMcxx\
-                             m1bbtojJlVSjnAOUCAbyJS0Vq/qdVqq5VK5TCumrEZcF23qJR6\
-                             BEz7hG6KyD3P81bjqDsS9YClpSWttV5WSq0A4wFSxpVSd6ampk\
-                             7Pzc155XJZotSPbEBrvQws9JmmgBvb29untra23kWqHyXZdd0i\
-                             8KBj+wB4KiLXLMvKWpaVNcZcB1aAX+2BIrLguu7tKBpCz4DjOK\
-                             O5XO4Tx3u+KiI3Pc/b6JZTKBQuGWPeAmfbtjfr9fr5sIMd+gnY\
-                             tl3kuPiDXuIBSqXSB+AWx5/EdPOsUIQ2YIyZbV8rpZ71Et9ifX\
-                             39vYg8b98TkcEbUEpd7hDxMmiuiLzo2LoSVkeUIZ5oXxhjPveR\
-                             +7HXWf0QxUC2fVEul38GTewSm+0aGIBIr9F/gdTAsAl0kclDJn\
-                             +P8ASYAc4kK4kfwFrDsJC5z6ZfsK+BpvgNIB+Huj7YtTQX1DzV\
-                             XkG+LdT85wctHiB/aHjsFxRkBmZiEBMKFaB2EANJ93wvcn4BJ/\
-                             4tlBoYNqmBYWMlcagA1Rrs7B/dlPkxmLBj/gjVJBED1Rp83/u7\
-                             bv2etOOvlUgL7ewH24uDRAx0a5Uk2gcSMpAfC7YXB4nMwESz13\
-                             ebbdMa4iRIxIDiaGCTGNpOTvw9kBoYNqmBYRPEwJ5/SGLU/QKC\
-                             GCjFICQsa34BvgYaikVgJxY5/bHb0Cz6BfkayNzli6W5KPCKwb\
-                             TTHvC6obmamefrAOqlpJxo/gB9k7aRwlhAgwAAAABJRU5ErkJg\
-                             gg=='
+                            HNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0\
+                            RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAKNSUR\
+                            BVGiB7Zi/a1NRFMc/9/ZVA43kkW62LoVOgiJPUQeHB4EOounm2P\
+                            +horZbp4IIOthFXHURBwtujX35B6IU1MEKhWLApSWpdqg19zg0w\
+                            TSEvJf3I7H4PlPu5Zx7vt+8c96FBykp/zcqzsMcxxm1bbtojJlV\
+                            SjnAOUCAbyJS0Vq/qdVqq5VK5TCumrEZcF23qJR6BEz7hG6KyD3\
+                            P81bjqDsS9YClpSWttV5WSq0A4wFSxpVSd6ampk7Pzc155XJZot\
+                            SPbEBrvQws9JmmgBvb29untra23kWqHyXZdd0i8KBj+wB4KiLXL\
+                            MvKWpaVNcZcB1aAX+2BIrLguu7tKBpCz4DjOKO5XO4Tx3u+KiI3\
+                            Pc/b6JZTKBQuGWPeAmfbtjfr9fr5sIMd+gnYtl3kuPiDXuIBSqX\
+                            SB+AWx5/EdPOsUIQ2YIyZbV8rpZ71Et9ifX39vYg8b98TkcEbUE\
+                            pd7hDxMmiuiLzo2LoSVkeUIZ5oXxhjPveR+7HXWf0QxUC2fVEul\
+                            38GTewSm+0aGIBIr9F/gdTAsAl0kclDJn+P8ASYAc4kK4kfwFrD\
+                            sJC5z6ZfsK+BpvgNIB+Huj7YtTQX1DzVXkG+LdT85wctHiB/aHj\
+                            sFxRkBmZiEBMKFaB2EANJ93wvcn4BJ/4tlBoYNqmBYWMlcagA1R\
+                            rs7B/dlPkxmLBj/gjVJBED1Rp83/u7bv2etOOvlUgL7ewH24uDR\
+                            Ax0a5Uk2gcSMpAfC7YXB4nMwESz13ebbdMa4iRIxIDiaGCTGNpO\
+                            Tvw9kBoYNqmBYRPEwJ5/SGLU/QKCGCjFICQsa34BvgYaikVgJxY\
+                            5/bHb0Cz6BfkayNzli6W5KPCKwbTTHvC6obmamefrAOqlpJxo/g\
+                            B9k7aRwlhAgwAAAABJRU5ErkJggg=='
 
         # Icons8 icon file (MIT) Copyright (C) The author(s)
         a["icon_sendenc"] = b'iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAB\

@@ -3,6 +3,11 @@ import zipfile
 import tarfile
 import re
 import datetime
+import settings
+
+# Translations
+import gettext
+_ = gettext.gettext
 
 
 class UserFile():
@@ -21,14 +26,149 @@ class UserFile():
             if len(_count) == len(self.list):
                 self.is_file = True
                 self.source_dir = Path(self.list[0]).parent
+            else:
+                raise Exception("Not all inputs are files")
+                # TBD
+        elif Path(input).is_file():
+                self.is_file = True
+                self.list = [ input ]
+                self.list = [ input ]
+                if self.is_file:
+                    self.path = Path(input)
+                    self.source_dir = self.path.parent
+                self.basename = self.path.name
         else:
-            self.list = [ input ]
-            self.is_file = self.path.is_file()
-            if self.is_file:
-                self.path = Path(self.as_string)
-                self.source_dir = self.path.parent
+            self.is_file = False
+            raise exception("Input is not a file")
 
         self.target_dir = self.source_dir
+
+class ArchiveFile():
+    def __init__(
+                 self,
+                 use_zip: bool,
+                 compression: bool
+                 ):
+        self.is_archive = False
+        self.use_tar = True
+        self.use_compression = False
+        self.is_archive = self.check_is_archive()
+        if self.is_archive:
+            self.compressed = self.path
+            if self.use_tar:
+                self.tar = self.path
+            else:
+                self.zip = self.path
+        else:
+            self.extracted = self.path
+            #self.legacy = get_legacy_name(self)
+            self.zip = self.set_suffix('.zip')
+            self.tar = self.set_suffix('.tar')
+            self.use_tar = ease.use_tar# default
+
+
+    def check_is_archive(self):
+        """ Determine if file is archive """
+        if zipfile.is_zipfile(self.as_string):
+            self.is_archive, self.use_zip = True, True
+        elif tarfile.is_tarfile(self.as_string):
+            self.is_archive, self.use_tar = True, True
+        return self.is_archive
+
+    def archive(self):
+        """packs input files in tar or zip"""
+        if self.is_archive:
+            raise Exception("file_already_archived")
+        else:
+            _wrk = [ self.path.stem,
+                     self.use_tar,
+                     self.use_compression,
+                     self.list ]
+
+            try:
+                run_in_the_background('archive', _wrk)
+                # TBD update files now here?
+            except Exception as e:
+                print(e)
+
+    def extract(self, input_file: str):
+        """unpacks input file"""
+        if self.is_archive:
+            _wrk = [ input_file, self.target_dir ]
+            run_in_the_background('unarchive', _wrk)
+        else:
+            raise Exception("File is not an archive")
+
+
+class CryptFile():
+    """ Depends on run_in_the_background() """
+    def __init__(self):
+        self.passphrase = None
+        self.buffer_size = 64 * 1024
+        self.is_encrypted = self.is_encrypted()
+        if self.is_encrypted:
+            self.encrypted = self.path
+            self.aes_ext = self.is_easefile()
+            if self.aes_ext:
+                self.decrypted = self.path.parent / self.path.stem
+                if str(self.decrypted ).endswith('.zip'):
+                    self.decrypted = None
+                elif str(self.decrypted ).endswith('.tar'):
+                    self.decrypted = None
+        else:
+            self.decrypted = self.path
+            self.encrypted = self.set_suffix('.aes')
+            self.aes_ext = False
+
+    def is_encrypted(self):
+        """ Check AES file type header """
+        with open(self.as_string, "rb") as raw:
+            b = str(raw.read(32))
+        raw.close()
+        if "AES" in b or "aescrypt" in b.lower():
+            return True
+        return False
+
+    def set_passphrase(self, passphrase: str):
+        if len(passphrase) < 6:
+            raise Exception("pass_too_short")
+        elif len(passphrase) > 1024:
+            raise Exception("pass_too_long")
+        else:
+            self.passphrase = passphrase
+
+    def is_easefile(self):
+        return self.as_string.endswith('.aes')
+
+    def cryptwork(self, encrypt_file:bool):
+        """ run external worker as ordered """
+        if self.output is None:
+            raise Exception("No output attribute set")
+            return False # ??
+
+        # work order
+        _wrk = [encrypt_file,
+                self.as_string,
+                self.output,
+                self.passphrase]
+
+        if encrypt_file:
+            run_in_the_background('encrypt', _wrk)
+        else:
+            run_in_the_background('decrypt', _wrk)
+
+    def encrypt(self):
+        """ encrypts the file """
+        cryptwork(self, True)
+
+    def decrypt(self):
+        """ decrypts the file """
+        cryptwork(self, False)
+
+
+class SendFile():
+    """ Contains attr and methods for file transmission """
+    pass
 
 
 class EaseFile(UserFile, ArchiveFile, CryptFile):
@@ -37,9 +177,9 @@ class EaseFile(UserFile, ArchiveFile, CryptFile):
     attributes of an EaseFile object.
     """
 
-    use_tar = ease.use_tar
-    use_zip = False if ease.use_tar else True
-    compression = ease.use_compression
+    # use_tar = ease.use_tar
+    # use_zip = False if ease.use_tar else True
+    # compression = ease.use_compression
 
 
     def __init__(
@@ -51,6 +191,12 @@ class EaseFile(UserFile, ArchiveFile, CryptFile):
                  ):
 
         # List of file names
+
+
+                    # uinput_file is file.input
+                    # uinput_folder is file.target_dir
+                    #
+
         # self.archived = None
         # self.extracted = None
         # self.encrypted = None
@@ -66,6 +212,8 @@ class EaseFile(UserFile, ArchiveFile, CryptFile):
             self.use_tar = ease.use_tar
             self.use_archiving = ease.archive
 
+
+
         # Basics
         UserFile.__init__(self, input)
 
@@ -73,15 +221,14 @@ class EaseFile(UserFile, ArchiveFile, CryptFile):
         self.legacy = False
         self.generic = None
         if self.path is not None:
-            self.legacy = has_generic_name(self)
+            self.legacy = self.has_generic_name()
             if self.legacy:
                 self.generic = self.path
             else:
-                self.generic = get_generic_name(self)
+                self.generic = self.get_generic_name()
 
 
         # Archiving
-        self.use_archiving = archiving
         if self.list:
             if len(self.list) != 1:
                 # Override if >1 file
@@ -125,157 +272,65 @@ class EaseFile(UserFile, ArchiveFile, CryptFile):
         return str(self.attr)
 
 
-class ArchiveFile():
-    def __init__(
-                 self,
-                 use_zip: bool,
-                 compression: bool
-                 ):
-        self.is_archive = False
-        self.use_tar = True
-        self.use_compression = False
-        self.is_archive = check_is_archive(self)
-        if self.is_archive:
-            self.compressed = self.path
-            if self.use_tar:
-                self.tar = self.path
-            else:
-                self.zip = self.path
-        else:
-            self.extracted = self.path
-            #self.legacy = get_legacy_name(self)
-            self.zip = set_suffix(self, '.zip')
-            self.tar = set_suffix(self, '.tar')
-            self.use_tar = True # default
 
-
-    def check_is_archive(self):
-        """ Determine if file is archive """
-        if zipfile.is_zipfile(self.as_string):
-            self.is_archive, self.use_zip = True, True
-        elif tarfile.is_tarfile(self.as_string):
-            self.is_archive, self.use_tar = True, True
-        return self.is_archive
-
-    def archive(self, input_files: list):
-        """packs input files in tar or zip"""
-        if self.is_archive:
-            raise Exception("Input already archived ..")
-        else:
-            _wrk = [ self.path.stem,
-                     self.use_tar,
-                     self.use_compression,
-                     input_files ]
-
-            try:
-                run_in_the_background('archive', _wrk)
-                # TBD update files now here?
-            except Exception as e:
-                print(e)
-
-    def extract(self, input_file: str):
-        """unpacks input file"""
-        if self.is_archive:
-            _wrk = [ input_file, self.target_dir ]
-            run_in_the_background('unarchive', _wrk)
-        else:
-            raise Exception("File is not an archive")
-
-
-class CryptFile():
-    """ Depends on run_in_the_background() """
-    def __init__(self):
-        self.passphrase = None
-        self.buffer_size = 64 * 1024
-        self.is_encrypted = is_encrypted(self)
-        if self.is_encrypted:
-            self.encrypted = self.path
-            self.aes_ext = is_easefile(self)
-            if self.aes_ext:
-                self.decrypted = self.path.parent / self.path.stem
-                if str(self.decrypted ).endswith('.zip'):
-                    self.decrypted = None
-                elif str(self.decrypted ).endswith('.tar'):
-                    self.decrypted = None
-        else:
-            self.decrypted = self.path
-            self.encrypted = set_suffix(self, '.aes')
-            self.aes_ext = False
-
-    def is_encrypted(self):
-        """ Check AES file type header """
-        with open(self.as_string, "rb") as raw:
-            b = str(raw.read(32))
-        raw.close()
-        if "AES" in b or "aescrypt" in b.lower():
-            return True
-        return False
-
-    def set_passphrase(self, passphrase: str):
-        if len(passphrase) < 6:
-            raise Exception("Password too short")
-        elif len(passphrase) > 1024:
-            raise Exception("Password too long")
-        else:
-            self.passphrase = passphrase
-
-    def is_easefile(self):
-        return self.as_string.endswith('.aes')
-
-    def cryptwork(self, encrypt_file:bool):
-        """ run external worker as ordered """
-        if self.output is None:
-            raise Exception("No output attribute set")
-            return False # ??
-
-        # work order
-        _wrk = [encrypt_file,
-                self.as_string,
-                self.output,
-                self.passphrase]
-
-        if encrypt_file:
-            run_in_the_background('encrypt', _wrk)
-        else:
-            run_in_the_background('decrypt', _wrk)
-
-    def encrypt(self):
-        """ encrypts the file """
-        cryptwork(self, True)
-
-    def decrypt(self):
-        """ decrypts the file """
-        cryptwork(self, False)
-
-
-class SendFile():
-    """ Contains attr and methods for file transmission """
-    pass
 
 
 class LoopControl():
     """
-    Used in main() main loop
+    Used in main() main loop to generate courses of action
     Each course of action has a recipe to follow
     """
-    def __init__(self, course_of_action: str):
+    def __init__(self, course_of_action: str, object_reference: EaseFile):
+        self.input = object_reference
         try:
             LoopControl.course_of_action()
         except:
-            if type == 0:
-                self.step = self.encrypt()
-            elif type == 1:
-                self.step = self.decrypt()
-            else:
-                self.step = self.send()
+            raise Exception(f"unknown action recipe_: {course_of_action}")
+
+    def identify(self, _coa: str):
+        """
+        We need to identify least necessary set of:
+            source             : source files (list)
+            target             : target file (generated)
+            target_dir         : target directory (uinput/generated)
+            temporary_archive  : tar/zip file path (generated)
+        """
+        self.source = self.input.list
+        if self.input.legacy:
+            self.basename = self.input.generic
+        else:
+            self.basename = self.input.basename
+
+        self.target_dir = self.input.target_dir
+
+#        if _coa == 'encrypt':
+#            self.temporary_archive
+#            self.target
+#            self.source_dir = self.input.source_dir
+#            self.target_dir = self.input.target_dir
+
+
+
+
+
+#        elif _coa == 'decrypt':
+
+
+
+
+
+
+
 
     def send(self):
         pass
 
     def decrypt(self):
+        yield self.identify('decrypt')
         pass
 
     def encrypt(self):
+        yield self.identify('encrypt')
         yield 'identify' # u know, substitute these with functions ...
         yield 'archive'
         yield 'encrypt'
