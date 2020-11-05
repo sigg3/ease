@@ -1062,7 +1062,7 @@ def main():
     # Listed files will be removed (unlinked) in event loop
     # These are typically temporary files: e.g. when sending >1 file we
     # create an archive and encrypt that. The unencrypted archive is garbage.
-    files_to_remove = []
+    ease.temporary = []
 
     # Create main window
     MainWindow = create_main_window()

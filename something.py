@@ -84,6 +84,9 @@ class EaseFile(UserFile, ArchiveFile, CryptFile):
 
         # TBD: TransmitFile
 
+    def waste_file(self, item):
+        ease.temporary.append(item) # ?
+
     def update(self):
         # update file names
         pass
