@@ -1315,7 +1315,18 @@ def main():
                     # user clicked "Decrypt" to execut decryption on input
 
                     # the file to decrypt
-                    uinput_file = Decrypt_value["dec_uinput_file"]
+                    #uinput_file = Decrypt_value["dec_uinput_file"]
+
+                    file.EaseFile(
+                                  Decrypt_value["dec_uinput_file"],
+                                  ease.use_compression,
+                                  ease.use_tar,
+                                  ease.use_zip
+                    )
+
+
+
+
 
                     # the passphrase to be used
                     uinput_passphrase = Decrypt_value["uinput_passphrase"]
