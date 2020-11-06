@@ -206,11 +206,11 @@ def create_enc_window() -> Type[sg.Window]:
     encrypt_input = [
         [
         sg.InputText(
-            key="enc_uinput_files",
+            key="enc_infiles",
             enable_events=True
             ),
         sg.FilesBrowse(
-            target="enc_uinput_files"
+            target="enc_infiles"
             )
         ]
     ]
@@ -220,10 +220,10 @@ def create_enc_window() -> Type[sg.Window]:
         sg.InputText(
             ease.output_dir,
             disabled=True,
-            key="output_preview_str"
+            key="enc_out_str"
             ),
         sg.FolderBrowse(
-            target="output_preview_str"
+            target="enc_out_str"
             )
         ]
     ]
@@ -269,8 +269,8 @@ instead of tar.")
         [sg.Frame(layout=[
             [sg.T(_("It is recommended to use a full sentence as \
 the passphrase."))],
-            [sg.In("", key="uinput_passphrase")],
-            [sg.T(get_password_strength(""), key="uinput_ppstrength")]
+            [sg.In("", key="passphrase")],
+            [sg.T(get_password_strength(""), key="ppstrength")]
             ],
             title=_("Passphrase")
             )
@@ -300,8 +300,8 @@ def create_dec_window() -> Type[sg.Window]:
     # Set tables
     decrypt_input = [
         [
-        sg.InputText(key="dec_uinput_file", enable_events=True),
-        sg.FileBrowse(target="dec_uinput_file")
+        sg.InputText(key="dec_infile", enable_events=True),
+        sg.FileBrowse(target="dec_infile")
         ]
     ]
 
@@ -325,10 +325,10 @@ def create_dec_window() -> Type[sg.Window]:
         sg.InputText(
             ease.output_dir,
             disabled=True,
-            key="dec_output_preview_str"
+            key="dec_out_str"
             ),
         sg.FolderBrowse(
-            target="dec_output_preview_str"
+            target="dec_out_str"
             )
         ]
     ]
@@ -336,7 +336,7 @@ def create_dec_window() -> Type[sg.Window]:
     decrypt_passphrase = [
         [sg.In(
             "",
-            key="uinput_passphrase"
+            key="passphrase"
             )
         ]
     ]
@@ -645,23 +645,23 @@ def get_unique_middlefix() -> int:
     return int(datetime.datetime.timestamp(datetime.datetime.now()))
 
 
-def get_password_strength(uinput_passphrase: str) -> str:
+def get_password_strength(passphrase: str) -> str:
     """
     We're not evaluating password policies, just providing feedback
-    Use: get_password_strength(Encrypt_value['uinput_passphrase'])
+    Use: get_password_strength(encrypt_value['passphrase'])
     """
     # string wrangling
     entropy = _("Passphrase entropy bits")
     complexity = _("complexity")
     score = _("score")
 
-    if uinput_passphrase is None or uinput_passphrase == "":
+    if passphrase is None or passphrase == "":
         return f"{entropy}: 0.0, {complexity}: 0.00, {score}: 0"
 
-    stats = PasswordStats(uinput_passphrase)
+    stats = PasswordStats(passphrase)
     pass_c = f"{stats.strength():0.2f}"
     pass_e = f"{stats.entropy_bits:0.1f}"
-    pass_s = zxcvbn(uinput_passphrase)["score"]
+    pass_s = zxcvbn(passphrase)["score"]
 
     return f"{entropy}: {pass_e}, {complexity}: {pass_c}, {score}: {pass_s}"
 
@@ -1042,7 +1042,9 @@ def run_in_the_background(worker_to_run: str, worker_args: list):
 
     # debug output
     if output_dict[output_index] is None:
-        raise Exception("Thread worker failure")
+        raise Exception("Thread worker failure") # TBD
+
+
 
 def main():
     """
@@ -1091,22 +1093,22 @@ def main():
             MainWindow.Hide() # "closes" main window
             Encrypt = create_enc_window()
             while show_encrypt:
-                Encrypt_event, Encrypt_value = Encrypt.read()
+                encrypt_event, encrypt_value = Encrypt.read()
 
-                if Encrypt_event == sg.WIN_CLOSED:
+                if encrypt_event == sg.WIN_CLOSED:
                     show_encrypt = False
 
-                if Encrypt_event == "-enc_cancel-":
+                if encrypt_event == "-enc_cancel-":
                     show_encrypt = False
-                elif Encrypt_event == "enc_uinput_files":
+                elif encrypt_event == "enc_infiles":
                     # Update output folder to match parent dir of
                     # files selectes as input (quality of life + 1)
-                    Encrypt["output_preview_str"].update(
+                    Encrypt["enc_out_str"].update(
                         get_folder_from_infiles(
-                            Encrypt_value["enc_uinput_files"]
+                            encrypt_value["enc_infiles"]
                             )
                     )
-                elif Encrypt_event == "-enc_encrypt-":
+                elif encrypt_event == "-enc_encrypt-":
 
                     # # TODO
                     # 1. create object
@@ -1118,21 +1120,21 @@ def main():
 
                     # create input file object
                     file = EaseFile(
-                        Encrypt_value["enc_uinput_files"],
-                        Encrypt_value["compression"],
-                        Encrypt_value["tar"],
-                        Encrypt_value["zip"]
+                        encrypt_value["enc_infiles"],
+                        encrypt_value["compression"],
+                        encrypt_value["tar"],
+                        encrypt_value["zip"]
                     )
 
                     # Retrieve other user input
-                    file.target_dir = Path(Encrypt_value["output_preview_str"])
+                    file.target_dir = Path(encrypt_value["enc_out_str"])
                     if file.target_dir.is_dir():
                         pass
                     else:
                         file.target_dir = file.source_dir
 
                     try:
-                        file.set_passphrase(Encrypt_value["uinput_passphrase"])
+                        file.set_passphrase(encrypt_value["passphrase"])
                     except Exception as e:
                         if e == "pass_too_short":
                             err_str = _("Error: password too short")
@@ -1150,16 +1152,7 @@ def main():
                                 )
                             show_encrypt = False
 
-                    # Here now, just execute loop control, u ass:!
-
-                    # uinput_file is file.input
-                    # uinput_folder is file.target_dir
-                    # uinput_files er file.list
-                    #
-                    #
-
-
-
+                    
                     if file.use_archiving:
                         try:
                             # execute tar/zip in separate thread
@@ -1274,8 +1267,8 @@ def main():
 
                 else:
                     # an "else" here is probably input into passphrase box
-                    Encrypt["uinput_ppstrength"].update(
-                        get_password_strength(Encrypt_value["uinput_passphrase"])
+                    Encrypt["ppstrength"].update(
+                        get_password_strength(encrypt_value["passphrase"])
                         )
 
             # reclaim file namespace for the great nothing
@@ -1294,31 +1287,28 @@ def main():
 
             # Do decryption loop
             while show_decrypt:
-                Decrypt_event, Decrypt_value = Decrypt.read()
+                decrypt_event, decrypt_value = Decrypt.read()
 
-                if Decrypt_event == sg.WIN_CLOSED:
+                if decrypt_event == sg.WIN_CLOSED:
                     show_decrypt = False
 
-                if Decrypt_event == "-dec_cancel-":
+                if decrypt_event == "-dec_cancel-":
                     show_decrypt = False
 
-                if Decrypt_event == "dec_uinput_file":
+                if decrypt_event == "dec_infile":
                      # Update output folder in GUI to match parent
                      # dir of files selectes as input (quality of life + 1)
-                    Decrypt["dec_output_preview_str"].update(
+                    Decrypt["dec_out_str"].update(
                         get_folder_from_infiles(
-                            Decrypt_value["dec_uinput_file"]
+                            decrypt_value["dec_infile"]
                             )
                         )
 
-                elif Decrypt_event == "-dec_decrypt-":
+                elif decrypt_event == "-dec_decrypt-":
                     # user clicked "Decrypt" to execut decryption on input
 
-                    # the file to decrypt
-                    #uinput_file = Decrypt_value["dec_uinput_file"]
-
                     file.EaseFile(
-                                  Decrypt_value["dec_uinput_file"],
+                                  decrypt_value["dec_infile"],
                                   ease.use_compression,
                                   ease.use_tar,
                                   ease.use_zip
@@ -1326,7 +1316,7 @@ def main():
 
                     # Set user input passphrase (minimal checks)
                     try:
-                        file.set_passphrase(Decrypt_value["uinput_passphrase"])
+                        file.set_passphrase(decrypt_value["passphrase"])
                     except Exception as e:
                         if e == "pass_too_short":
                             err_msg = _("Password is too short")
@@ -1341,9 +1331,9 @@ def main():
                         break
 
                     # Set user input toggles
-                    file.uncompress = Decrypt_value["uncompress"]
-                    file.remove_aes = Decrypt_value["removesrc"] # remove .aes
-                    file.target_dir = Path(Decrypt_value["dec_output_preview_str"])
+                    file.uncompress = decrypt_value["uncompress"]
+                    file.remove_aes = decrypt_value["removesrc"] # remove .aes
+                    file.target_dir = Path(decrypt_value["dec_out_str"])
 
                     # Preliminary checks
                     infile_error = True
@@ -1525,7 +1515,6 @@ def main():
 
             while show_about:
                 About_event, About_value = About.read()
-#print(f"About_event  = {About_event}\nAbout_value  = {About_value}")  # debug
 
                 if About_event == sg.WIN_CLOSED:
                     show_about = False
