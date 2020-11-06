@@ -15,7 +15,7 @@ class UserFile():
         self.input = input
         self.as_string = input
         self.is_file = False
-        self.output = []
+        self.output = None
         self.temporary = [] # not in use
         self.path = None
         self.source_dir = None
@@ -53,6 +53,7 @@ class ArchiveFile():
         self.use_tar = True
         self.use_compression = False
         self.is_archive = self.check_is_archive()
+        self.uncompress = True
         if self.is_archive:
             self.compressed = self.path
             if self.use_tar:
@@ -91,13 +92,10 @@ class ArchiveFile():
             except Exception as e:
                 raise Exception(e)
 
-    def extract(self, input_file: str):
+    def extract(self, input_file: Path):
         """unpacks input file"""
-        if self.is_archive:
-            _wrk = [ input_file, self.target_dir ]
-            run_in_the_background('unarchive', _wrk)
-        else:
-            raise Exception("File is not an archive")
+        _wrk = [ str(input_file), self.target_dir ]
+        run_in_the_background('unarchive', _wrk)
 
 
 class CryptFile():
@@ -140,23 +138,22 @@ class CryptFile():
     def is_easefile(self):
         return self.as_string.endswith('.aes')
 
-    def cryptwork(self, encrypt_file:bool):
+    def cryptwork(self, crypto_type:bool):
         """ run external worker as ordered """
-        if self.output is None:
-            raise Exception("No output attribute set")
-            return False # ??
-
-        if encrypt_file:
+        #if self.output is None:
+        #    raise Exception("No output attribute set")
+        #    return False # ??
+        if crypto_type:
             _order = 'encrypt'
             _input = str(self.intermediary)
             _output = str(self.encrypted)
         else:
             _order = 'decrypt'
-            print('Unfinished code here yall')
-            # inputs/outputs here
+            _input = self.as_string
+            _output = str(self.intermediary)
 
         # work order
-        _work = [encrypt_file,
+        _work = [crypto_type,
                 _input,
                 _output,
                 self.passphrase]
@@ -246,6 +243,9 @@ class EaseFile(UserFile, ArchiveFile, CryptFile):
 
         # Encryption
         CryptFile.__init__(self)
+
+        # Decryption
+        self.remove_aes = False
 
         # TBD: self.output must be not None
         # These are stepping stone files

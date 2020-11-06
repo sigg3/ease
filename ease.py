@@ -1238,7 +1238,7 @@ def main():
                     # get status
                     encrypt_exit, encrypt_error = ease.thread
 
-                    if enc_exit is 0:
+                    if encrypt_exit is 0:
                         # success popup
                         inputs_str = "\n".join(self.list)
                         err_str = _("Successfully encrypted the input file(s)")
@@ -1248,13 +1248,13 @@ def main():
                             err_str,
                             title=_("Success!")
                         )
-                    elif enc_exit == 1:
+                    elif encrypt_exit == 1:
                         err_str = _("I/O error")
                         sg.popup_error(
                             f"{err_str}: {encrypt_error}",
                             title=err_str
                             )
-                    elif enc_exit == 2:
+                    elif encrypt_exit == 2:
                         err_str = _("Encryption error")
                         sg.popup_error(
                             f"{err_str}: {encrypt_error}",
@@ -1324,203 +1324,130 @@ def main():
                                   ease.use_zip
                     )
 
-
-
-
-
-                    # the passphrase to be used
-                    uinput_passphrase = Decrypt_value["uinput_passphrase"]
-
-                    # uncompress file after decryption (if an archive)
-                    uinput_unarchive = Decrypt_value["uncompress"]
-
-                    # remove source .aes file after successful decryption
-                    uinput_cleanup = Decrypt_value["removesrc"]
-
-                    # target directory for decrypted (and extracted) files
-                    uinput_outdir = Decrypt_value["dec_output_preview_str"]
-
-                    if Path.is_dir(Path(uinput_outdir)):
-                        pass
-                    else:
-                        err_str = _("Selected directory not a directory")
-                        sg.popup_error(
-                            f"{err_str}:\n{uinput_outdir}",
-                            title=_("Error")
-                            )
-                        show_decrypt = False
-                        break
-
-                    if Path.is_file(Path(uinput_file)):
-                        # read first bytes (AES header is a requirement)
-                        # cf. https://github.com/marcobellaccini/pyAesCrypt/issues/11
-                        with open(uinput_file, "rb") as rawfile: byte = str(rawfile.read(32))
-
-                        if "AES" in byte or "aescrypt" in byte.lower():
-
-                            # We know it's an aes file, but it might have invalid extension
-                            output_file = Path(uinput_outdir) / Path(uinput_file).stem
-                            if Path(uinput_file).parent == Path(uinput_outdir):
-                                if uinput_file.endswith("aes"):
-                                    pass
-                                else:
-                                    # This is an ugly hack
-                                    output_file = Path(str(output_file + ".out"))
-
-                            # Create unique output name if out file exists
-                            if output_file.is_file():
-                                output_alt = output_file.parent / output_file.stem
-                                output_alt = f"{output_alt}-{get_unique_middlefix()}"
-                                output_file = f"{output_alt}{output_file.suffix}"
-
-
-                            # Run aescrypt_worker in a separate thread
-                            # while displaying a "working..." animated pop-up
-                            # and report back to ease.thread attr,
-                            run_in_the_background(
-                                "decrypt",
-                                [
-                                    False,
-                                    uinput_file,
-                                    str(output_file),
-                                    uinput_passphrase
-                                ]
-                            )
-
-                            # parse return from separate thread
-                            if ease.thread[0] == 0:
-                                pass # success!
-                            elif ease.thread[0] == 1:
-                                err_str = _("I/O error")
-                                sg.popup_error(
-                                    f"{err_str}: {ease.thread[1]}",
-                                    title=err_str
-                                    )
-                                uinput_cleanup = False
-                                show_decrypt = False
-                                break # should be superfluous ..
-                            elif ease.thread[0] == 2:
-                                err_str = _("Decryption error")
-                                sg.popup_error(
-                                    f"{err_str}: {ease.thread[1]}",
-                                    title=err_str
-                                    )
-                                uinput_cleanup = False
-                                show_decrypt = False
-                                break # should be superfluous ..
-
-
-                            # check if it's an archive
-                            # if so, we will extract the archive contents into out_directory
-                            if Path(output_file).is_file():
-                                if uinput_unarchive:
-
-                                    # Run extraction in the background (threading)
-                                    # while showing a "Working ..." pop-up
-                                    # Output saved in ease.thread
-                                    run_in_the_background(
-                                        "unarchive",
-                                        [
-                                            str(output_file),
-                                            uinput_outdir
-                                        ]
-                                    )
-
-                                    # parse returns from background thread
-                                    if type(ease.thread[0]) is list:
-                                        pass
-                                    elif ease.thread[0] == "error":
-                                        err_str = _("Error")
-                                        sg.popup_error(
-                                            f"{err_str}: {ease.thread[1]}.",
-                                            title=err_str
-                                            )
-                                        uinput_cleanup = False
-                                        show_decrypt = False # TODO is this correct??
-                                        break
-                                    else:
-                                        err_str = "Weird unhandled case unarchiving."
-                                        sg.popup_error(
-                                            err_str, title=_("Error")
-                                            )
-                                        uinput_cleanup = False
-
-                                    extracted_files = ease.thread[0]
-                                    skipped_files = ease.thread[1]
-                                    num_extract = len(extracted_files)
-                                    num_archived = num_extract + len(skipped_files)
-
-
-                                    # Determine deletion of temporary "leftover" archive file
-                                    if num_archived == 0 and num_extract == 0:
-                                        # This file was not archived in the
-                                        # first place and so we must skip
-                                        # deletion of temp archive file
-                                        num_archived, num_extract = 1, 1
-                                    else:
-                                        # delete obsolete temp archive file
-                                        # called "output_file"
-                                        # (end-user wants extracted contents)
-                                        files_to_remove.append(str(output_file))
-                                else:
-                                    num_extract, num_archived = 1, 1
-
-
-                                # Give visual feedback
-                                if num_extract == num_archived:
-                                    pop_msg = _("Successfully decrypted input file(s)")
-                                    pop_ex = num_extract
-                                    pop_arc = num_archived
-                                    sg.popup_ok(
-                                        f"{pop_msg}: {pop_ex} / {pop_arc}",
-                                        title=_("Success")
-                                    )
-
-                                else:
-                                    pop_msg = _("Successfully decrypted input file(s)")
-                                    pop_note = _("Skipped items")
-                                    pop_ex = num_extract
-                                    pop_arc = num_archived
-                                    pop_1 = f"{pop_msg}: {pop_ex} / {pop_arc}"
-                                    pop_2 = f"{pop_note}:\n{skipped_files}"
-                                    sg.popup_ok(
-                                        f"{pop_1}\n\n{pop_2}",
-                                        title=_("Partial success")
-                                    )
-
-                            else:
-                                err_str = _("Selected input not recognized as file(s)")
-                                sg.popup_error(
-                                    f"{err_str}: {output_file}", title=_("Error")
-                                    )
-
-                                show_decrypt = False
-                                break
-
-                            # Remove .aes file if so configured
-                            if uinput_cleanup:
-                                files_to_remove.append(uinput_file) # mark for deletion
-
-                            # Quit to main after decryption
-                            show_decrypt = False
-
+                    # Set user input passphrase (minimal checks)
+                    try:
+                        file.set_passphrase(Decrypt_value["uinput_passphrase"])
+                    except Exception as e:
+                        if e == "pass_too_short":
+                            err_msg = _("Password is too short")
                         else:
-                            err_str = _("File not AES v2 format (pyAesCrypt).")
-                            sg.popup_error(
-                                err_str,
-                                title=_("Error")
-                                )
-                            show_decrypt = False
-                            break
-                    else:
-                        err_str = _("Selected input not recognized as file(s)")
+                            err_msg = _("Password is too long")
+                        err_str = _("Passphrase mismatch")
                         sg.popup_error(
-                            f"{err_str}: '{uinput_file}'.", title=_("Error")
+                            f"{err_str}: {err_msg}",
+                            title=_("Decryption error")
                             )
                         show_decrypt = False
                         break
 
-                    # Rest of decrypt stuff goes here
+                    # Set user input toggles
+                    file.uncompress = Decrypt_value["uncompress"]
+                    file.remove_aes = Decrypt_value["removesrc"] # remove .aes
+                    file.target_dir = Path(Decrypt_value["dec_output_preview_str"])
+
+                    # Preliminary checks
+                    infile_error = True
+                    if not file.is_file:
+                        err_str = _("Selected input not recognized as file(s)")
+                    elif not file.target_dir.is_dir():
+                        err_str = _("Selected directory not a directory")
+                    elif not file.is_encrypted:
+                        err_str = _("File not AES v2 format (pyAesCrypt)."),
+                    else:
+                        infile_error = False
+
+                    if infile_error:
+                        sg.popup_error(
+                            err_str,
+                            title=_("Input file error")
+                            )
+                        show_decrypt = False
+                        break
+
+
+                    # Check that we don't overwrite existing file
+                    file.intermediary = file.target_dir / file.path.stem
+                    if file.intermediary.is_file():
+                        file.intermediary = file.get_unique_middlefix()
+
+
+                    # run aescrypt worker in separate thread
+                    # reports back to ease.thread as a tuple
+                    # in  file.path
+                    # out file.intermediary
+                    file.decrypt()
+
+                    # get status
+                    decrypt_exit, decrypt_error = ease.thread
+
+                    if decrypt_exit is 1:
+                        err_str = _("I/O error")
+                    elif decrypt_exit is 2:
+                        err_str = _("Decryption error")
+                    elif not file.intermediary.is_file():
+                        err_str = _("I/O error")
+                        decrypt_error = _("Output not recognized as a file")
+                        decrypt_exit = 3 # manual override
+
+                    if decrypt_exit > 0:
+                        sg.popup_error(
+                            f"{err_str}: {decrypt_error}",
+                            title=_("Decryption error")
+                            )
+                        file.remove_aes = False
+                        show_decrypt = False
+                        break # should be superfluous ..
+
+
+                    if file.uncompress:
+                        try:
+                            file.extract(file.intermediary)
+                            file.output, skipped = ease.thread
+                            num_extracted = len(file.output)
+                            num_skipped = len(skipped)
+                            num_archived = num_extracted + num_skipped
+
+                            if num_extracted is 0 and num_skipped is 0:
+                                pass
+                            elif num_skipped > 0:
+                                file.remove_aes = False
+                            else:
+                                file.waste_file(file.intermediary)
+                        except:
+                            # just hand the raw file to user
+                            num_extracted = 1, num_archived = 1
+                            file.output = [self.intermediary]
+                    else:
+                        num_extracted = 1, num_archived = 1
+                        file.output = [self.intermediary]
+
+                    if num_extracted == num_archived:
+                        pop_msg = _("Successfully decrypted input file(s)")
+                        pop_ex = num_extract
+                        pop_arc = num_archived
+                        sg.popup_ok(
+                            f"{pop_msg}: {pop_ex} / {pop_arc}",
+                            title=_("Success")
+                        )
+                    else:
+                        pop_msg = _("Successfully decrypted input file(s)")
+                        pop_note = _("Skipped items")
+                        pop_ex = num_extracted
+                        pop_arc = num_archived
+                        pop_1 = f"{pop_msg}: {pop_ex} / {pop_arc}"
+                        pop_2 = f"{pop_note}:\n{skipped}"
+                        sg.popup_ok(
+                            f"{pop_1}\n\n{pop_2}",
+                            title=_("Partial success")
+                        )
+
+                    if file.remove_aes:
+                        file.waste_file(file.path)
+
+                    break
+
+            # reclaim file namespace for the great nothing
+            del file
 
             # End decryption window
             Decrypt.close()
