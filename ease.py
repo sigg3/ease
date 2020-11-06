@@ -44,7 +44,7 @@ import webbrowser
 # Local stuff
 import something
 import settings
-import IPython
+#import IPython
 
 # Translations
 import gettext
@@ -1152,7 +1152,7 @@ def main():
                                 )
                             show_encrypt = False
 
-                    
+
                     if file.use_archiving:
                         try:
                             # execute tar/zip in separate thread
@@ -1162,7 +1162,7 @@ def main():
                             number_of_inputs = len(file.list)
                             archived_items = len(archive_list)
 
-                            if archived_items is 0:
+                            if archived_items == 0:
                                 archive_error = True
                                 err_str = _("Could not archive any files")
                             elif archived_items != number_of_inputs:
@@ -1231,7 +1231,7 @@ def main():
                     # get status
                     encrypt_exit, encrypt_error = ease.thread
 
-                    if encrypt_exit is 0:
+                    if encrypt_exit == 0:
                         # success popup
                         inputs_str = "\n".join(self.list)
                         err_str = _("Successfully encrypted the input file(s)")
@@ -1370,9 +1370,9 @@ def main():
                     # get status
                     decrypt_exit, decrypt_error = ease.thread
 
-                    if decrypt_exit is 1:
+                    if decrypt_exit == 1:
                         err_str = _("I/O error")
-                    elif decrypt_exit is 2:
+                    elif decrypt_exit == 2:
                         err_str = _("Decryption error")
                     elif not file.intermediary.is_file():
                         err_str = _("I/O error")
@@ -1397,7 +1397,7 @@ def main():
                             num_skipped = len(skipped)
                             num_archived = num_extracted + num_skipped
 
-                            if num_extracted is 0 and num_skipped is 0:
+                            if (num_extracted + num_skipped) == 0:
                                 pass
                             elif num_skipped > 0:
                                 file.remove_aes = False
@@ -1405,10 +1405,10 @@ def main():
                                 file.waste_file(file.intermediary)
                         except:
                             # just hand the raw file to user
-                            num_extracted = 1, num_archived = 1
+                            num_extracted, num_archived = 1, 1
                             file.output = [self.intermediary]
                     else:
-                        num_extracted = 1, num_archived = 1
+                        num_extracted, num_archived = 1, 1
                         file.output = [self.intermediary]
 
                     if num_extracted == num_archived:
