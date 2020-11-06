@@ -41,7 +41,7 @@ class Settings():
         self.thread = {}
 
         # temporary files (for removal)
-        self.temporary = []
+        self.wastebin = []
 
         # base64 encoded PNG icons dict
         self.icon = self.populate_icons()

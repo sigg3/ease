@@ -254,7 +254,8 @@ class EaseFile(UserFile, ArchiveFile, CryptFile):
         # TBD: TransmitFile
 
     def waste_file(self, item):
-        ease.temporary.append(item) # ?
+        """ Marks file for delition """
+        ease.temporary.append(item)
 
     def update(self):
         # update file names
@@ -267,13 +268,13 @@ class EaseFile(UserFile, ArchiveFile, CryptFile):
             return False
         return True
 
-    def get_generic_name(self):
+    def get_generic_name(self) -> Path:
         """ generates generic ease name string """
         tstamp = datetime.datetime.now().isoformat()
         tstamp, _ = tstamp.split(sep="T")
         return self.path.parent / f"ease_{tstamp}"
 
-    def set_suffix(self, suffix):
+    def set_suffix(self, suffix) -> Path:
         return Path(str(self.path.parent / self.path.stem) + suffix)
 
     def get_unique_middlefix(self) -> Path:

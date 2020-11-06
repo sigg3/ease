@@ -1063,7 +1063,7 @@ def main():
     # Listed files will be removed (unlinked) in event loop
     # These are typically temporary files: e.g. when sending >1 file we
     # create an archive and encrypt that. The unencrypted archive is garbage.
-    files_to_remove = ease.temporary
+    files_to_remove = ease.wastebin
 
     # Create main window
     MainWindow = create_main_window()
@@ -1219,11 +1219,9 @@ def main():
                                 show_encrypt = False
                                 break
                     else:
+                        # Not archiving, use file path as string
                         file.intermediary = file.as_string
 
-                    # legend
-                    actual_input = file.intermediary
-                    actual_output = file.encrypted
 
                     if file.encrypted.is_file():
                         # file already exists, do not overwrite
