@@ -255,7 +255,7 @@ class EaseFile(UserFile, ArchiveFile, CryptFile):
 
     def waste_file(self, item):
         """ Marks file for delition """
-        ease.temporary.append(item)
+        ease.wastebin.append(item)
 
     def update(self):
         # update file names

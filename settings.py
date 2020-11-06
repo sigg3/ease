@@ -48,14 +48,15 @@ class Settings():
 
         # file sending services dict
         self.sites = self.populate_transmitters()
+    
 
     def clean_up(self):
-        for xfile in self.temporary:
+        for xfile in self.wastebin:
             try:
                 Path(xfile).unlink(missing_ok=True)
             except Exception as e:
                 print(f"Could not remove temp: {xfile}")
-        self.temporary.clear()
+        self.wastebin.clear()
 
 
 

@@ -1271,11 +1271,15 @@ def main():
                     show_encrypt = False
                     break # should not be necessary but sometimes it is ..
 
+
                 else:
                     # an "else" here is probably input into passphrase box
                     Encrypt["uinput_ppstrength"].update(
                         get_password_strength(Encrypt_value["uinput_passphrase"])
                         )
+
+            # reclaim file namespace for the great nothing
+            del file
 
             # End encryption window
             Encrypt.close()
