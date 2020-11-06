@@ -1150,10 +1150,6 @@ def main():
                                 )
                             show_encrypt = False
 
-
-                    # set safe fallback
-                    proceed_with_encryption = False
-
                     # Here now, just execute loop control, u ass:!
 
                     # uinput_file is file.input
@@ -1165,156 +1161,118 @@ def main():
 
 
                     if file.use_archiving:
-                        number_of_inputs = len(file.list)
                         try:
                             # execute tar/zip in separate thread
                             # save status messages to ease.thread
                             file.archive()
-                            archive_status = ease.thread
+                            archive_list, archive_file = ease.thread
+                            number_of_inputs = len(file.list)
+                            archived_items = len(archive_list)
+
+                            if archived_items is 0:
+                                archive_error = True
+                                err_str = _("Could not archive any files")
+                            elif archived_items != number_of_inputs:
+                                archive_error = True
+                                err_str = _("Could not archive all files")
+                            else:
+                                archive_error = False
+
+                            if archive_error:
+                                err_out = archived_items
+                                err_ins = number_of_inputs
+                                err_abort = _("Aborting")
+                                err_msg = f"{err_str}: {err_out} / {err_ins}"
+                                sg.popup_error(
+                                    f"{err_msg}. {err_abort}!",
+                                    title=_("Archiving error")
+                                    )
+                                if Path(archive_file).is_file():
+                                    file.waste_file(archive_file) # 2b removed
+                                show_encrypt = False
+                                break
+
+                            if Path(archive_file).is_file():
+                                file.intermediary = archive_file
+                                file.waste_file(archive_file) # 2b removed
+                            else:
+                                err_msg = _("Error: output archive not a file")
+                                err_abort = _("Aborting")
+                                sg.popup_error(
+                                    f"{err_msg}. {err_abort}!",
+                                    title=_("Archiving error")
+                                    )
+                                show_encrypt = False
+                                break
 
                             # if success, then archive file is encryption src
                         except Exception as e:
                             if e == "file_already_archived":
-                                pass
-                                # use this file as encryption  src TBD
+                                file.intermediary = file.as_string
                             else:
-                                print(f"Exception: {e}")
+                                err_msg = _("Unknown error")
+                                err_abort = _("Aborting")
+                                sg.popup_error(
+                                    f"{err_msg}: {e}. {err_abort}!",
+                                    title=_("Archiving error")
+                                    )
                                 show_encrypt = False
                                 break
-
-
-
-
-
-
-
-                        # Archive files (if desired or > 1)
-                        if archive_files:
-                            number_of_inputs = len(uinput_files)
-
-
-                            # archive parameters
-                            target_location = Path(uinput_folder)
-                            archive_target = Path(uinput_folder) / Path(uinput_basename).stem
-
-                            # Run archiving in the background (threading)
-                            # while showing a "Working ..." pop-up
-                            # Output saved in ease.thread
-                            run_in_the_background(
-                                "archive",
-                                [
-                                    str(archive_target),
-                                    use_tar,
-                                    use_compression,
-                                    uinput_files
-                                ]
-                            )
-
-                            # save outputs here (ease.thread is re-usable)
-                            archive_outputs = ease.thread # Note: tuple type
-                            number_of_archived_items = len(archive_outputs[0])
-                            if number_of_archived_items != number_of_inputs:
-                                err_str = _("Could not archive any files")
-                                err_tit = _("Archiving error")
-                                err_arc = number_of_archived_items
-                                err_ins = number_of_inputs
-                                err_abort = _("Aborting")
-                                err_msg = f"{err_str}: {err_arc} / {err_ins}"
-                                sg.popup_error(
-                                    f"{err_msg}. {err_abort}!",
-                                    title=err_tit
-                                    )
-
-                            elif number_of_archived_items == 0:
-                                err_str = _("Could not archive all the files")
-                                err_tit = _("Archiving error")
-                                sg.popup_error(
-                                    err_str,
-                                    title=err_tit
-                                    )
-                            else:
-                                actual_input = archive_outputs[1]
-                                proceed_with_encryption = True
-                        else:
-                            actual_input = uinput_file
-                            proceed_with_encryption = True
-
-                        # Encrypt file
-                        if proceed_with_encryption:
-                            actual_output = f"{actual_input}.aes" # standard extension
-
-                            # Check that we're not overwriting
-                            if Path.is_file(Path(actual_output)):
-                                # Create a unique output name
-                                if Path(actual_input).suffix in (".zip", ".tar", ".gz"):
-                                    alt_out = Path(actual_input).parent / Path(actual_input).stem
-                                    actual_out_1 = f"{alt_out}-{get_unique_middlefix()}"
-                                    actual_out_2 = f"{Path(actual_input).suffix}.aes"
-                                    actual_output = f"{actual_out_1}{actual_out_2}"
-                                else:
-                                    actual_output = f"{actual_input}.{get_unique_middlefix()}.aes"
-
-                            # Run aescrypt_worker in a separate thread
-                            # while displaying a "working..." animated pop-up
-                            # and report back to ease.thread attr
-                            run_in_the_background(
-                                "encrypt",
-                                [
-                                    True,
-                                    actual_input,
-                                    actual_output,
-                                    uinput_passphrase
-                                ]
-                            )
-
-                            # parse return from separate thread
-                            if ease.thread[0] == 0: # success
-                                # Visual feedback is good
-                                # newline separated list of inputs' basenames
-                                inputs_str = [ Path(x).name for x in uinput_files ]
-                                inputs_str = "\n".join(inputs_str)
-
-                                # success popup
-                                err_str = _("Successfully encrypted the input file(s)")
-                                err_str += f":\n\n{inputs_str}\n\n"
-                                err_str += f"({Path(actual_output).name}"
-                                sg.popup_ok(
-                                    err_str,
-                                    title=_("Success!")
-                                )
-
-                                # remove input file if tar or zip
-                                if archive_files:
-                                    if actual_input.split(".")[-1] in ("zip", "tar", "gz"):
-                                        files_to_remove.append(actual_input) # mark for deletion
-
-                            elif ease.thread[0] == 1:
-                                err_str = _("I/O error")
-                                sg.popup_error(
-                                    f"{err_str}: {ease.thread[1]}",
-                                    title=err_str
-                                    )
-                            elif ease.thread[0] == 2:
-                                err_str = _("Encryption error")
-                                sg.popup_error(
-                                    f"{err_str}: {ease.thread[1]}",
-                                    title=err_str
-                                    )
-                            else:
-                                err_str = _("Unhandled exception")
-                                sg.popup_error(
-                                    f"{err_str}: ease.thread not in 0-2",
-                                    title=err_str
-                                    )
-
-
-                        # Quit to main either way
-                        show_encrypt = False
-
                     else:
-                        err_str = _("Selected folder is not a folder")
-                        sg.popup_error(f"{_err_str}: '{uinput_folder}'.")
-                        show_encrypt = False
+                        file.intermediary = file.as_string
+
+                    # legend
+                    actual_input = file.intermediary
+                    actual_output = file.encrypted
+
+                    if file.encrypted.is_file():
+                        # file already exists, do not overwrite
+                        file.encrypted = file.get_unique_middlefix()
+                        file.encrypted = Path(file.encrypted) + '.aes'
+
+
+                    # run aescrypt worker in separate thread
+                    # reports back to ease.thread aws tuple
+                    # in  file.intermediary
+                    # out file.encrypted
+                    file.encrypt()
+
+                    # get status
+                    encrypt_exit, encrypt_error = ease.thread
+
+                    if enc_exit is 0:
+                        # success popup
+                        inputs_str = "\n".join(self.list)
+                        err_str = _("Successfully encrypted the input file(s)")
+                        err_str += f":\n\n{inputs_str}\n\n"
+                        err_str += f"({Path(actual_output).name}"
+                        sg.popup_ok(
+                            err_str,
+                            title=_("Success!")
+                        )
+                    elif enc_exit == 1:
+                        err_str = _("I/O error")
+                        sg.popup_error(
+                            f"{err_str}: {encrypt_error}",
+                            title=err_str
+                            )
+                    elif enc_exit == 2:
+                        err_str = _("Encryption error")
+                        sg.popup_error(
+                            f"{err_str}: {encrypt_error}",
+                            title=err_str
+                            )
+                    else:
+                        err_str = _("Unhandled exception")
+                        sg.popup_error(
+                            f"{err_str}: ease.thread not in 0-2",
+                            title=err_str
+                            )
+
+                    # Quit to main either way
+                    show_encrypt = False
+                    break # should not be necessary but sometimes it is ..
+
                 else:
                     # an "else" here is probably input into passphrase box
                     Encrypt["uinput_ppstrength"].update(

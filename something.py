@@ -16,7 +16,7 @@ class UserFile():
         self.as_string = input
         self.is_file = False
         self.output = []
-        self.temporary = []
+        self.temporary = [] # not in use
         self.path = None
         self.source_dir = None
         self.basename = None
@@ -89,7 +89,7 @@ class ArchiveFile():
                 run_in_the_background('archive', _wrk)
                 # TBD update files now here?
             except Exception as e:
-                print(e)
+                raise Exception(e)
 
     def extract(self, input_file: str):
         """unpacks input file"""
@@ -146,16 +146,23 @@ class CryptFile():
             raise Exception("No output attribute set")
             return False # ??
 
+        if encrypt_file:
+            _order = 'encrypt'
+            _input = str(self.intermediary)
+            _output = str(self.encrypted)
+        else:
+            _order = 'decrypt'
+            print('Unfinished code here yall')
+            # inputs/outputs here
+
         # work order
-        _wrk = [encrypt_file,
-                self.as_string,
-                self.output,
+        _work = [encrypt_file,
+                _input,
+                _output,
                 self.passphrase]
 
-        if encrypt_file:
-            run_in_the_background('encrypt', _wrk)
-        else:
-            run_in_the_background('decrypt', _wrk)
+        run_in_the_background(_order, _work)
+
 
     def encrypt(self):
         """ encrypts the file """
@@ -241,6 +248,8 @@ class EaseFile(UserFile, ArchiveFile, CryptFile):
         CryptFile.__init__(self)
 
         # TBD: self.output must be not None
+        # These are stepping stone files
+        self.intermediary = None
 
         # TBD: TransmitFile
 
@@ -266,6 +275,15 @@ class EaseFile(UserFile, ArchiveFile, CryptFile):
 
     def set_suffix(self, suffix):
         return Path(str(self.path.parent / self.path.stem) + suffix)
+
+    def get_unique_middlefix(self) -> Path:
+        """
+        Returns a "unique" middle name for use in non-unique filenames
+        use: my_var = f"{my_file.stem}-{get_unique_suffix()}{my_file.suffix}"
+        Requires that my_file is path object and, of course, datetime.
+        """
+        midfix = int(datetime.datetime.timestamp(datetime.datetime.now()))
+        return Path(str(self.path.parent / self.path.stem) + midfix)
 
     def __str__(self, attr):
         """ Returns path as string """
